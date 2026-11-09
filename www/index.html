@@ -1,0 +1,1144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Entrance Exam Reviewer</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="theme-color" content="#0f1b3d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="BNHS Reviewer">
+
+
+<style>
+  :root{
+    --bg:#0f1b3d; --bg2:#1a2a6c;
+    --surface:#ffffff; --ink:#132043; --muted:#5b6b94; --line:#e2e7f3;
+    --primary:#2346c8; --primary-dk:#1a359c; --accent:#f07c1b; --accent2:#f4b400;
+    --good:#1a9e5c; --good-bg:#e7f7ee; --bad:#d93838; --bad-bg:#fdeaea;
+    --math:#2346c8; --sci:#1a9e5c; --eng:#c2410c; --logic:#7c3aed; --gen:#0891b2;
+    --radius:18px; --shadow:0 10px 30px rgba(15,27,61,.14); --fs-base:19px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font-size:var(--fs-base);
+    color:var(--ink);background:linear-gradient(160deg,var(--bg),var(--bg2));line-height:1.5;min-height:100vh;
+    padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+  .wrap{max-width:880px;margin:0 auto;padding:16px 16px 60px}
+  .screen{display:none;animation:fade .25s ease}
+  .screen.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  /* Branded header */
+  .brandbar{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:12px 16px;
+    display:flex;align-items:center;gap:12px;margin-bottom:16px;border-bottom:5px solid var(--accent)}
+  .brandbar img{display:block;flex:0 0 auto;object-fit:contain}
+  .brandbar .l-bnhs{height:64px;width:64px}
+  .brandbar .l-nexus{height:58px;width:auto}
+  .brandbar .mid{flex:1;text-align:center;min-width:0}
+  .brandbar h1{margin:0;font-size:1.35rem;font-weight:900;color:var(--primary-dk);line-height:1.15}
+  .brandbar .sub{margin:3px 0 0;font-size:.78rem;font-weight:700;color:var(--muted)}
+  .brandbar .gift{display:inline-block;margin-top:5px;font-size:.72rem;font-weight:800;color:#fff;
+    background:linear-gradient(90deg,var(--accent),var(--primary));padding:3px 11px;border-radius:999px;letter-spacing:.3px}
+  @media(max-width:480px){
+    .brandbar{padding:10px 10px;gap:8px}
+    .brandbar .l-bnhs{height:48px;width:48px}
+    .brandbar .l-nexus{height:44px}
+    .brandbar h1{font-size:1.05rem}
+    .brandbar .sub{font-size:.68rem}
+  }
+
+  .card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px}
+  .card + .card{margin-top:16px}
+  h2{font-size:1.45rem;margin:0 0 .3em}
+  .lead{color:var(--muted);margin:0 0 14px}
+
+  /* Home */
+  .hero{text-align:center}
+  .hero p{color:var(--muted);margin:0 auto;max-width:600px}
+  .readiness{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:16px 0 4px}
+  .stat{background:#f3f6ff;border-radius:14px;padding:10px 16px;min-width:120px}
+  .stat b{display:block;font-size:1.45rem;color:var(--primary-dk);line-height:1.1}
+  .stat span{font-size:.75rem;color:var(--muted);font-weight:700}
+  .tiles{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px}
+  @media(max-width:560px){.tiles{grid-template-columns:1fr}}
+  .tile{position:relative;border:2px solid var(--line);border-radius:var(--radius);padding:18px;text-align:left;cursor:pointer;
+    transition:.15s;background:#fff;font-family:inherit;color:var(--ink);display:flex;gap:14px;align-items:center}
+  .tile:hover{border-color:var(--primary)} .tile:active{transform:scale(.98)}
+  .tile .ic{font-size:2.1rem;line-height:1;flex:0 0 auto}
+  .tile h3{margin:0;font-size:1.12rem}
+  .tile small{color:var(--muted);display:block;font-size:.82rem;line-height:1.35}
+  .tile.feature{border-color:var(--accent);background:#fff8f1}
+  .badge{position:absolute;top:10px;right:12px;background:var(--bad);color:#fff;font-size:.72rem;font-weight:800;
+    padding:2px 9px;border-radius:999px}
+  .coverage{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:14px}
+  .chip{font-size:.76rem;font-weight:700;padding:6px 12px;border-radius:999px;background:#eef1fb;color:var(--primary-dk)}
+
+  /* Buttons */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;cursor:pointer;font-family:inherit;
+    font-weight:800;font-size:1rem;padding:15px 22px;border-radius:14px;background:var(--primary);color:#fff;transition:.15s;width:100%}
+  .btn:active{transform:scale(.98)}
+  .btn.secondary{background:#eef1fb;color:var(--primary-dk)}
+  .btn.orange{background:var(--accent)}
+  .btn.danger{background:var(--bad-bg);color:var(--bad)}
+  .btn.lg{font-size:1.1rem;padding:17px}
+  .btn-row{display:flex;gap:12px;margin-top:16px}
+  .btn-row .btn{flex:1}
+
+  /* Subject grid */
+  .subjects{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:560px){.subjects{grid-template-columns:1fr}}
+  .subj{border-radius:var(--radius);padding:18px 20px;color:#fff;cursor:pointer;transition:.15s;border:none;text-align:left;font-family:inherit}
+  .subj:active{transform:scale(.98)}
+  .subj h3{margin:0 0 4px;font-size:1.12rem}
+  .subj small{opacity:.92;font-size:.82rem;display:block}
+  .subj .cnt{margin-top:10px;font-size:.76rem;font-weight:700;background:rgba(255,255,255,.22);display:inline-block;padding:4px 10px;border-radius:999px;margin-right:6px}
+
+  /* Top nav */
+  .qhead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;color:#fff;font-weight:700;font-size:.92rem}
+  .qhead .back{background:rgba(255,255,255,.15);border:none;color:#fff;font-family:inherit;font-weight:700;padding:10px 14px;border-radius:10px;cursor:pointer;font-size:.88rem}
+  .progress{height:10px;background:rgba(255,255,255,.2);border-radius:999px;overflow:hidden;margin-bottom:16px}
+  .progress > i{display:block;height:100%;background:var(--accent2);width:0;transition:.3s;border-radius:999px}
+
+  /* Question */
+  .meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:8px}
+  .tag{font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;padding:5px 11px;border-radius:999px;color:#fff}
+  .timer{font-weight:800;font-size:1.05rem;color:var(--ink);background:#fff4d6;padding:6px 14px;border-radius:999px}
+  .timer.warn{background:var(--bad-bg);color:var(--bad)}
+  .passage{background:#f6f8fe;border-left:5px solid var(--primary);padding:14px 16px;border-radius:12px;margin-bottom:16px;font-size:.98rem}
+  .qnum{color:var(--muted);font-weight:700;font-size:.85rem}
+  .qtext{font-size:1.25rem;font-weight:700;margin:0 0 18px}
+  .opts{display:grid;gap:12px}
+  .opt{display:flex;align-items:center;gap:13px;border:2px solid var(--line);border-radius:14px;padding:15px 16px;cursor:pointer;
+    background:#fff;transition:.12s;font-size:1.06rem;text-align:left;font-family:inherit;width:100%;color:var(--ink)}
+  .opt:active{transform:scale(.99)}
+  .opt .k{flex:0 0 34px;height:34px;border-radius:9px;background:#eef1fb;color:var(--primary-dk);font-weight:800;display:grid;place-items:center;font-size:1rem}
+  .opt.sel{border-color:var(--primary);background:#f3f6ff} .opt.sel .k{background:var(--primary);color:#fff}
+  .opt.correct{border-color:var(--good);background:var(--good-bg)} .opt.correct .k{background:var(--good);color:#fff}
+  .opt.wrong{border-color:var(--bad);background:var(--bad-bg)} .opt.wrong .k{background:var(--bad);color:#fff}
+  .opt[disabled]{cursor:default}
+  .feedback{margin-top:16px;border-radius:14px;padding:15px 16px;display:none}
+  .feedback.show{display:block;animation:fade .2s}
+  .feedback.ok{background:var(--good-bg);border:1.5px solid var(--good)}
+  .feedback.no{background:var(--bad-bg);border:1.5px solid var(--bad)}
+  .feedback b{display:block;margin-bottom:5px;font-size:1.05rem}
+  .feedback.ok b{color:var(--good)} .feedback.no b{color:var(--bad)}
+  .feedback .exp{font-size:.98rem}
+  .flagbtn{background:none;border:1.5px solid var(--line);border-radius:10px;padding:6px 10px;font-family:inherit;font-weight:700;font-size:.8rem;cursor:pointer;color:var(--muted)}
+  .flagbtn.on{background:#fff4d6;border-color:var(--accent2);color:#7a5a00}
+
+  .navgrid{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+  .navgrid button{width:42px;height:42px;border-radius:10px;border:2px solid var(--line);background:#fff;font-weight:800;cursor:pointer;font-family:inherit;color:var(--ink);position:relative}
+  .navgrid button.done{background:var(--primary);color:#fff;border-color:var(--primary)}
+  .navgrid button.flag{border-color:var(--accent2);box-shadow:inset 0 -5px 0 var(--accent2)}
+  .navgrid button.cur{outline:3px solid var(--accent);outline-offset:1px}
+
+  /* Results */
+  .scorebig{text-align:center;padding:6px 0}
+  .ring{width:150px;height:150px;border-radius:50%;margin:0 auto 10px;display:grid;place-items:center;background:conic-gradient(var(--good) var(--p,0%),#eef1fb 0)}
+  .ring .inner{width:118px;height:118px;border-radius:50%;background:#fff;display:grid;place-items:center;align-content:center}
+  .ring .pct{font-size:2.1rem;font-weight:900;line-height:1}
+  .ring .lbl{font-size:.8rem;color:var(--muted);font-weight:700}
+  .verdict{text-align:center;font-size:1.2rem;font-weight:800;margin:6px 0 2px}
+  .bdown .row{display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--line)}
+  .bdown .row .name{flex:1.4;font-weight:700;font-size:.92rem}
+  .bdown .bar{flex:1;height:12px;background:#eef1fb;border-radius:999px;overflow:hidden}
+  .bdown .bar > i{display:block;height:100%;border-radius:999px}
+  .bdown .val{font-weight:800;font-size:.88rem;width:64px;text-align:right}
+  .focus{background:#fff8f1;border:1.5px solid var(--accent);border-radius:14px;padding:14px 16px;margin-top:16px}
+  .focus b{color:#a4520c}
+  .focus ul{margin:6px 0 0;padding-left:20px}
+  .review-item{border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:12px}
+  .review-item .q{font-weight:700;margin-bottom:8px}
+  .review-item .a{font-size:.94rem;margin:3px 0}
+  .review-item .a.me{color:var(--bad)} .review-item .a.me.ok{color:var(--good)} .review-item .a.key{color:var(--good)}
+  .review-item .exp{font-size:.9rem;color:var(--muted);margin-top:8px;background:#f6f8fe;padding:10px 12px;border-radius:10px}
+
+  /* Notes / tips */
+  .notes h3{margin:22px 0 8px;font-size:1.15rem;color:var(--primary-dk);border-bottom:2px solid var(--line);padding-bottom:4px}
+  .notes h3:first-child{margin-top:0}
+  .notes ul{margin:0;padding-left:22px} .notes li{margin:6px 0}
+  .notes table{width:100%;border-collapse:collapse;font-size:.95rem;margin:6px 0}
+  .notes td,.notes th{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+  .notes th{background:#f3f6ff}
+  .notes .tip{background:#fff8f1;border-left:5px solid var(--accent);padding:10px 14px;border-radius:10px;margin:10px 0}
+  .notes .ex{background:#f6f8fe;border-radius:10px;padding:10px 14px;margin:8px 0;font-size:.95rem}
+
+  .seg{display:flex;gap:10px;margin:10px 0 4px}
+  .seg button{flex:1;padding:13px 8px;border-radius:12px;border:2px solid var(--line);background:#fff;font-family:inherit;font-weight:800;cursor:pointer;color:var(--ink);font-size:.95rem}
+  .seg button.on{border-color:var(--primary);background:#f3f6ff;color:var(--primary-dk)}
+  .hint{color:var(--muted);font-size:.86rem;margin-top:6px}
+  .preset{background:#f0fbfd;border:1.5px dashed var(--gen);border-radius:14px;padding:16px;margin-bottom:8px}
+  .preset b{color:#0a6c80}
+  .empty{text-align:center;color:var(--muted);padding:20px 6px}
+  .empty .big{font-size:2.6rem}
+
+  .install{display:flex;align-items:center;gap:12px;text-align:left;background:#fff8f1;border:2px solid var(--accent);
+    border-radius:14px;padding:12px 14px;margin:14px 0 4px}
+  .install > div{flex:1} .install b{display:block;font-size:1rem} .install small{color:var(--muted);font-size:.84rem;display:block}
+  .modal{position:fixed;inset:0;background:rgba(10,18,45,.6);display:none;align-items:flex-end;justify-content:center;z-index:50;padding:16px}
+  .modal.show{display:flex}
+  .modal .sheet{background:#fff;border-radius:18px;padding:22px;max-width:480px;width:100%}
+  .modal ol{padding-left:22px;margin:8px 0 16px} .modal li{margin:8px 0}
+  .footer{margin-top:24px;text-align:center;color:#c8d3f5;font-size:.8rem}
+  .footer img{height:30px;vertical-align:middle;border-radius:6px;background:#fff;padding:2px;margin:0 4px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="brandbar">
+    <img class="l-bnhs" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAQDAwQDAwQEBAQFBQQFBwsHBwYGBw4KCggLEA4RERAOEA8SFBoWEhMYEw8QFh8XGBsbHR0dERYgIh8cIhocHRz/2wBDAQUFBQcGBw0HBw0cEhASHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBz/wAARCADcANoDASIAAhEBAxEB/8QAHQAAAgEFAQEAAAAAAAAAAAAAAAgHAQMFBgkEAv/EAEwQAAEDAwIDBQUEBgYHBwUAAAECAwQABREGBxIhMQgTQVFhFCIycYEVI5GhQlJicoKxFhczc5LBCSQ0Q2OisyU2RFN1g7JUdJPC0f/EABwBAAICAwEBAAAAAAAAAAAAAAAEAwcCBQYBCP/EADURAAEDAgQEAggGAwEAAAAAAAEAAgMEEQUSITEGQVFhE3EUIjKBkaGxwQcjQtHh8BVSYpL/2gAMAwEAAhEDEQA/AH+ooooQiiiihCKKKKEIoqhUBy8a8Um82+EcSZ0Vg/8AFeSn+ZoGugQvdRXjjXWFMx7NMjvZ6d06lWfwNerjGOtB03QhS0oSSo4A6ml+3N7WGldFvPW+yJ+37s2ShQYXwx2lDqFOc+IjyTn5ioh7SnaHkX2bN0fpWYpq0Mksz5rJwqUsHCm0K8EDmCR8R9KV4eA8BXdYFwn6QwVFboDs3t3S8k1tGqatR9qvcu/POGPdWLPHUfdZt8dI4R++viUfyrVBvjuSHAsa3veQc4MjI/AitBxRiu1jwWhjblbC23kFAXvPNTlprtZ7jWJ1Pt0yJeo46tzWEpUfktGCPzpndrO09pPcN9m3TCbHfHPdRFlLBbeV5NudCfQ4Pzrnhiq9OhPnWur+FaGqacjcjuo+42WbJXDc3XX8HNVpQezN2in5sqJorVssuvOYbttweVlSz4MuKJ5n9VXj0PhTfDmBVX4hh82HzmCYa9eRHUJprg4XCKKM4qmR50islWiiihCKKKKEIooooQiiiihCKKKKEIooooQjIqGt4+0Rp/akKgJSbpqFSOJEBheA3noXV8+AenMnyrw9pDev+q/T6LfanEnU90SfZ8jiEZvop0jzzySD1PoK57SpL86S9JkvOPyHllxx11RUpaj1JJ6k113DvDf+QHpFRpHyHM/woZJcujd1JWt+0JuBrp1wSr69b4KicQraosNgeRIPEr6moxdcXIWVvLU64eZU4oqJPzNUxRirLp6CmpmhkLA0dglCXHdXI0l+G8l6M+6w6jmlbSyhQ+RFSRau0FuLabLOtCdRyJUOWypjMwd64yFDBUhw+8DgnqTUZ4qlE9BTTi0zA7zCAXDYoHKq1TFVAJGfDzpgAAbouVXNFedyXHZx3j7SM/rLAqvtLJRxhxPB+tnl+NRunhabOeB70a9FfzRmvM3Mju8m5DKz5JcB/wA69BGKza5jvZN0aqqHFsuIcaWptxCgpK0nBSQcgj1B502Ku2nJiaQtUaNZDL1MlhKJkmS5wxwscuJIT7ys4B8OZNKZQBmkK/CaXECw1Db5dv5WTXubspdvfab3PvbpV/SRUBsnIbgMIaAHlkgn86xDG/m5kdwLRrW7KIOcOLSsH6FNR1ijFetwaga3KIW/ALzM/qmJ0l2xtb2Z1Kb9HhXyIPi9z2d7HopPuk/NNNftnvfpPdNngtM0s3NCeN23SsIfQPEgdFp9U59cVzHxXpt9wl2mdGnQZLsaZGWHGX2VcK21DxBrS4nwlR1LC6nGR/bb4fspGTOG668A0VA3Z034TufbVWi9LQjVUFvic4QEpltjl3qR4EZAUB8+h5TwDmqvqqWWkmdBMLOCbBBFwq0UUUuvUUUUUIRRRRQhFWpDyI7K3XFhDaElSlHoABkmrtR9vld12LaPWE5pRQ6i3utoUOoKxwf/ALVJFGZXtjHMgfFeHRc7t0dbyNw9d3q/vLUWZDxRGQT/AGbCPdbSPpz+ajWn5oCeEYA5Cvqr5p4GQRNhj0DRZa83JJXzmjNBrI2DT921XeGLPYre/cbo9zTHYHMJ8VKJ5JSPFR5UTzx07DLK6zRzKACsdms7pDROpdwJao2mLJLuZQfvH0J4I7f7zysJHyBJ9KaXbfsg2mA2xcNeSE3ibyV9mRlqRDbPks8lOkfRPoaZiHBj22GxEhx2osNhIQ0yygIbbSOgSkcgKrTGfxEZETHh7cx/2O3uUzITu5KBpXsZXaY029qnVLMAqGVRLSz3q0cuheXgZ+Sal2x9lba2ypQX7E9dn0kHvbpMceyQc54AUo+mMGtD3e7X0jQuo5GmbHoidKuTc37PE+6q9nhqfyOSSM8Y94HOU8jmjd3dLcbb3U2ykm6SWbZbr1IRF1BboyW3Gu/40haQ5gnh4V5AB/RrhqvGcXrSDNMQDyBt9FOGNHJTzaNrtE2JSza9H2GKpZBUWbe3k/XhNbB9kQEs+z/Z8QM/+V7Onh/w4xSe9ou73HUHaH05oC/6znaS0G/AEn2qK/7Ol57C88SzgZKkhHvck/WsBtLq2+/1XdoKxHUczUOmNPRJDdpuz7ilKOQ4PdWTnBASrAPLqOtap0Er2CV0hubdVnZOJdtstGX7hRc9IWKZwniHfW5skHHX4Qa0W+dlza69BwtadVa3lknvbXKcYwT+zko5eA4celIZC3f15obZj+jMyXdWBqBTF20/dGZCu8QlDykPN8ec8JKOngR5Kp79x91f6kNoLRMmrcumqX4keDBjukrdmzC2nJV4kA81fQdSKnD6ylc3wpTcnSxK8IUTap7F89hpx7SurESVJBKYl4YCCr0DzfTy5pqAtZbf6q28eCNTWKXb2lEhMoAOxl48nUZT+OKc/s37w6g3ZtmpWNUWiJbL9p6emDIaihQSpRSSSUqJ4SFJUMZqQ7BrnSWvnr3abTdoF1dtrqotxhpPEW1AlJC0KHNJIIzzBro8P43xWgfkn/MaN7/uo3xi2gXMkHIBByDzBFV605G5nZGst2beuGhHEWO5HKzb3VFUF49cAcyySfFOU+lKRqDTl40leXrNfrc/broyOJTDw+NOccaFDktB8FJ5VaWCcUUWMDLE7K/od/cl3NIWPoxRmiujseqxWY0lqiforUltv9scKJkB0OpAPJY/SQfMKGQfnXVHS1/iap09bL1BOYlwjokN884ChnB9RzH0rkryroB2PL+u7bTewuKKl2ma7GTn9RWHEj/nNcJxtQtMLKsDUGx8jsp4Xa2TA0UUVW6ZRRRRQhFFBOKjvdvd6x7S2NM65rL82RlMSA0oB2QodfkkeKvD1PKpIonzPEcYu47BeE2Fyt9ky2YbLj0h1tllscSnHFBKUjzJPIUtnaF3v0HeNvNSaXg39mddJrIbbTDQp1AUFpVgrHuj4fOlX3J3k1VujNW5eZym7eFZZtsdRTHaHh7v6R/aVn6VH+KsDCuDXRls9W/UEGw7d0u+fk0KvicUZo6VldLaXuuttR2/T1kZDtznqIQVfAyhPNbqz+qlPM+fIDma7ioqIqaJ00ps1u5UAF9Fk9v9vb/ubqBNnsDCONAC5Mx4HuYbZPxrPiTzwkc1EeAyafzbXa/Tm0dgciWtADq0hydcZOO9kqSOa1nolI8EjkkfjXs2123s212l2LFZ0qWAouyZTv8Aay3j8Ti/n0AHJIwBS59q/djd3afU1qn2B2BH0TJQGUvKipfC3z8SX+IEp5fCE4BAPU5qh+IOIp8dqPBYcsQ2HXummR2TJaG3F0xuXEnStL3dq4x4UpUJ51rI4XB4jPVJByFdCOlc+NIbsa2271TeNVNanlagvKb1It950xLU467IitcxITgEJCfeTxcgkgdQSKkHYfSu7mkt4o2p4Wk4CdIaqSHJ67PLQbYplQ4u+bPEeEhWVBPqU4GeTFaU0jYNvtZaxd0bAk3vVuo5ipdwR3iW40AKKlBLjmMNpypR4feWr9WtI1jIHOYBmuFKsVuzoxntRbI293T5VCnPvM3G3LuLa2VMLBKXErGMj3SrmAQcAjrV3cbTOjtxdJ6a0vrXUC5V7szkeQ6dP8Tz65CG+BWEpStSQonPMA9Kk9nbqVfkh3WV4euIPP7MhKVGgo9CkHjdx5rVj9kVutstFvssZMW2wY0KMno1GaS2n8EgVkyndYAmwGyLKINWWW0bmR40a9bVXK/Mx8qYcukdmN3fnhTjgWM+WBmiDphVs0xI0rB2gbi6bkoU2/AZuERLTqVfFxAKyc+JJzU18IHQVWsxTMAsCbeaLJdNS7ZaTvOn7JYL/tJem7PYlqdt7duW28IxJyoJLTvGQTzKcHNYjXO3m327m4Nqvt+1bfbddLcz3MO1uuG3GO4FZDjfeIB4+IZ5E5IHlTQlIPUCvJcLZCukVUW4RY8uKr4mZDYcQf4VZFe+BY3a4g/FFkqmjdttY9n/AE3vNeGlv6km3Zft1oWwpT0uQshwBTqeEZWCsKJGQcHFYvsKt6djaHvjLE7vtbPTDIvTDzS0PRxkpaSeIDI+JWR4qPlU8XrSkbSakq0peZFrlLPEi0kKlxHj5dyTxN/NtSceRq/bb9Dt989kvNpRZb7cggCSppKWrioD4UPD4lDJ9xeFeWaSmluXwg3O5t26rIsIFytvUtLaFLWoJQkEkk4AA6mo91FpnQ+/ekE/6xFutsKl+y3GC4C5GdTlJUhY6EHqk8j4gitF7S8HczWEOz6F0Hbu6t2oS43dL2XeFEdtPVpWPeQlQ6kAlXwjqahHY/eG56AesG0OlNum5Wp4Vzdb1C4xKC2n0pPCp9LoJCTjBJV7qQgAdeRSwyRgTwus8a6clhYKO9yNsr/tVfk2y9tpdjyOIwbg0CGpaB/8XAOqDzHUZFafmum2u9D2Tc3S8ywXhBciOqyl1k/exnk/CtB/RWk/j0Iwa50a30ZdNvdVT9OXlI9si4W28kAIksKJ4Hk+hA5j9E5FXNwhxWMTZ6LUH81vzCVkjI1CwGKeDsRNqRobUjishC7qAPoyjP8AOkfFbFpfX2p9EvF3T99n24k8SkMOkNrP7SDlKvqK6LHsOkxGkNPGbG4OvZYscGuuV1fopOdr+2S6p9m3a9ipDajwpusNGAn1cb8v2k/hTd225RLvBjzYMlqTEkIDjTzSgpDiT0II6iqjxDDanD35Khtuh5HyKca4OFwvXRRRSKyWF1ZqODpHTtyvdyd7uFb2VPOHxIHRI9ScAeprmBuJr26bk6rm6guqz3r6uFlkHKY7Q+FtPoB1PiSTTX9tXWDsDTli0xHcKftN5UmSB4ttY4R9Vqz/AA0k9WVwXhjWQmtePWdoOwH7lKzv1yoquapmiu6N1BdUWtLaFrWeFKAVE+gp7+zNtN/QLSYvl0j93qa/NpcfCusaP1aZHkcEKV+0cfoilk7PO3ydwty4SZbJds1kAuUwH4VqSr7lo/vLHF8kGugd1jyJtsmx40xcOU+yttqWlIUphakkBYB5EpJzj0qofxCxxzpG4bEdBYu/ZMQt/UV9xpsaap1MWSy+plRQ4GXErKFDqCATg+hrHaq0tata6fuFhvcNEy2T2yy8ysdc9CD4KBwQRzBArmfpja65o3Cd289tvlm3UF3KTdGZpREehlKluSFDkoqwAUhJPHxeYNPhpmxX622O37eOaquN9vYjmRdb4+rC2GVEhKEHqlS8FKc5UAFKz0quZqbwSCx1z81OW3svTo/TMRm0saJ0Kldo0hZwqNJujKuJxxeffaYWc5Xkkrd6AkhPPPDIUbSZsLIb0/IERtOCY7g421nGMnPPiPirOT41cgMzrJBjwIVoiNwozYaaZYe4QhI6AAirqr7PYH3lhmn1aUhf+dY+JSuaPEa4HrZwP0TDWOG1viF506rVbXA1e4TkLwEhPvsKP7w6fWtijS2ZbSXWHEONq5hSFAg/UVrj+sIaUlEu3XRtJHMLhqUPrjNZazQoESLxW+MmOzJPelISU5JHXB6U1SyFzsrZM48rFeyssLltj8l7G5bTr7zCVZcZ4eIeWRkVfpZ5W8MnS+42oXlM+0QTJUw4zxYICPdBT6jB/GpRsO+Gjr4ttr7SMR9zkESkFAz5cXSoqXFYJi6Nxs4EjXzW0quH66nY2Xwy5rgDcC+45qR61R+6Xa9vuRraw5BioUULmyW/eUQcfdoPX5nlW0oWHEBSSCD0NYe8N3dbrYt8iJHax946+grOfQchTdU0lu5t23K1MRF7W17r6tOn4tq4nEcTslf9pIePE4s/Py9BX1qCHaLpbX4N5biPwX08LjUnBSry6+I6gjmD0rCqt7Z966anddPiht1LKPwHP86uM/0UhHjQ7CUv9Za+8V+eaRFV4bcsbWsHdw+gWZZc3cST5LUGJw00py13Ge5c9KPo7lq5PuHvYnEeEMvucuJJzhLucjorwVUH6t0PqHZWDA0HsfpGQm6apW6uZqmS4FmMkHmlTh+EpByCrkBzAUrJpqpF1stwhvRHA3JivILa2e5KkLSRggjGCCK0/S05zTt2Glpch52GoKds8l/PG4ynmphZPVbQIweqkc+qTUUdSxrtJGuJ5Db7qJ7CNbWCjPZuDo3YNlWib1uVEuGsbrI9rlsTJwH+sLAyEIUfdKuXxHiVyNbB2iNp07l6NXIt7IVqezBT9vVnHejl3jB9FgcvJQSfOlX280tptjcy9aB1voeRf9c3u4T0zrlMbcWmG2pPFFebUnkELUVFTnVPLHLlTtbaQrnYdFaf0/qK5RpmprZb2m5ymnuMkj3QvnhWCABxEDODT3ivop21UTvWGv8AeyiIuLLmY24HW0rTkBXgRgjzBHmOlfQGamXtN7ep0NuS7cYbJRZ9ShU1v9VuSD9+gfMkLx+0ahqvofBsSZiVGyqbzHz5pFzQ02Kripx7PG+krbO9s2a6yFOaTnuBLiVHPsSz/vU+Sf1h5c+o5wbmjrTFfQQ10DoJhcH5d0NflNwuvzDqH2kuNqStCwClSTkEHoauVAPZM3Ac1dtwLVMdK7hp9wRCVHKlskZaJ+Qyn+Gp+qkKyldSTvp37tNk+12YXCQjtmzVyN0rfFV8Ea1t8H8TiyaXame7bNkXG1npy8JQe6mQFx1Kx1W2vP8AJdLAKtzhp7HYZDl6fdKS+0VWvkkZ64HnVTXyuI7PLcKOCqTLcRGaSOpW4oIGPqqtzNI2KN0h5C6jCezsoaNRp7a9i8LQfb9Sumcskcw0MoZSPTgHF81mopl9qCbae0jNelKdG1/fjTJlKB7hqS37yn89Mhajn9j5U2sSNb9JadiRHZDEO3W2M3H715aWkIShIQMkkBPTzpetTQez2NvbrtwnVdijQ7jJXJaSzN9qfZmrPuupI4lFQVgYz0yOhr5smqvSqqWaYFxcSnGbLP6S1XpPcided2ZWmEtDRz8u22m7d6FKuDIABUlOOvEeFHXHeHHU1Luh7Ld7FanH5jEdd7urnts9xThGHVAYbHL4W0hKAPJPrWh6f0TD0ZZtutuYhD0O1N/aE7u04MjuCCFcPkuQ4lXPwTUumdMWMMQTnzdWE/8A9rWy1EIOQPcDyygk2+B3U7Ad7Kjjt9J9xi3gftOKP+VWVHUaknhFrQf41V9KbvEg4XLjxknwZbK1D6msTc40CIALpeJ8hxXwsIcIKvkhABqNz3NGa7wP+nAfypmAE20PkLr1B6/NymW3bjZUhagC2EK4yPEDKuuK2nIxWj2e0kXBiVHsUSDGQrJcle/IXy8OvCfma3UKGK2OHEuYS6/vJP1WE5a0gD+/BIpu7Ak6b3Evsd9CkoekKlMqUOS0LPFkHx5kj6Vo6rt1BIx45pot/dy9mLBdIlg3IkuIuamBJZEeK6t1ptRIB42xyyUnkfLpUDHc7swWbinRZ9/u8hnK2oD7DwbdV4AlSQMfM1qKjh975TIw6E3Vq4Tx3Qx0TIamN2doA0tY8uuimmLvBN250btwLiBKTPjrXLQ5nvUscQCFj1CT0PWp+mJiXuzFwMpmxnmw82gqwHOWU865faz36t2t78/dZ8wIUpIaZjtNKDbDQ+FCfQfnXRbaC7W287S6XmQpaJsFVtbHepBwrCcKGCM8iCMelbWm8b145AQwDS/lZcpxDSUMMENRTyNdK4uLw03tc3G3S9l6IjTDIB/oXjx4my0v/Osmxc4rXxWCUwf/ALYH+VeG3W6zzMrsFzdiLT1aacOB821dKyqXb7BGHG409sfpNnu1/geRrXNY9guNuoa1w+QB+S517gfPzIV9vUEIYBbkNHyUwof5Vg9ax4mqLCtmFLbYu8VaZdvfWCO6ko5oPyPNKvNKlCs6zqGKVBElLsVw/ovowPx6Vkk9xIRlJQtJ8Rg0zHJLKLRTMPbLY/VQPAvqCl+3IZ3H1/pewStt7vbdMvXAKavMqYgCRESkY4ErwSOBfGkgDPQgil27MmtNv9tdQ3F3Vmp7s/uXc7s5Y5AceU9HeR3iQh0r6FPF+kpRI8Bg01OoNF23UFw1voG6KdTZdSx0XRsMr4VoKiEP8B8CHENr/wDcNW9CdnfbXbkocsmlIRmo6TZqfaXwfMKXnh/hApjxWxRuhl37JYkBYntRaNTqnaS6S0Mldw0+oXSOQAVfd5DqfkWyrPyFIIkhQCknKSMg+Yrq5KjMzYz0WQkKYkIU04lXMFKhwkH6E1ysn2p3T90uVneSoO2yW9CUFAA/drKRnHoAasr8Na8uZLRk7aj7paYA+svPijFVzRmrV1UGiZTsV3hyLuLebZz7mdbS4RnlxNuJwfwWae2kE7GcNx/diY+kHu41qeKz5cS2wP8AP8Kfuqi4uDRib7dBf4JyD2FCnad29e15tlLchNFy6WZft8dAHvLCQQ4gepQT9QK50Ag8x0rsAsAp54x61zj7S+i7BovcmU1YZjSkzk+1SIDY/wBicUeac9MKzxAeHyxW34LxLK51A/Y6j7ryZv6lDhNbns7amr5u7oaC9wlpV0beUlSeIKDSVO4I9SgVplSp2aYjUvfPSvegnuETH0c8YWmOrB/M11nEMnhYXUOb/qVAz2gnD3320mbubZ3XSsG5ot0qYtt1LzqCpCihXEELxzCSQMkZx5GlE2g29TpzfbRulte7Zw7XNiRZKY82I2t2NcpCeFbchSlKKfcS2ojh8TzSKZztA7k6y0OxpS06AtEa6ao1FNcjsMyhxICG2+NWBxJGceZ5YNa3spvHuDvLqWJPkaJZsuh4bDqX5r3vuPzUp4SltSuiQvjHugnAwVeFfPcDpWQk6ZTfzTjdlMGnz7buDqyarChCYh21BzzSeBT6/wAS6j8K2p66NtKKEBTzv6jfM/XyrS9IJTJuGtVKUoD7eeQpIOOLhZYA/KtoXMjwUhCEkqPRttOVGtdPUzRjKSI2jmdSfIf3yWBLS6w1PRfbjc+dkOPiIyR8DPNw/NXh9K8Dk+0ac70R2e+lgcTnAQpY9VrPJI9SRWu7i6kuWndH3G8IbbBZLTbcZTpQFKcdQ0C4sAlKAXOI8PPAOK+7LsdbJPdytZSl6luCTxdw+kt25lXk3FB4SP2nONR8TWdLSyVDvEYLf9O1PuHJNNeLWcfcP3WKk7t6UTcB9r67s8YtL4hb7ZJ79QI8HFthRPyGKzTG++3L6wg6wtjKlHA9pUpgfi4lIqSbfaYFpjojW+FHiR0DCWo7SW0pHoEgCrzsVqQ2W3kJcQrkUuAKB+hrew0jYgbEknmVHI7P2Sp749mKw9ou+x9YWvWKW5DUNEPENLUphaUqUoHiCuR940u+rexnpzQaoidUbp22zGYFFj21pLfehOOLh97njIz86fu77LaIusj2tFiYttxHMTrQpUGQD594yUk/XIpFO33p27aZlaDjTtSzL5DUiZ7KZ7LYkMpBa4kqdQB3gPLBKQRjmTmmQ1w56LHVZRj/AEeUiQhDjWsuNC0haVJipIKSMg/F0xTIbWHSWwGj42lr5rq0F2GClKX5jfe9SSO7SSRzPTFbJp3aFrUNktsjWOobrqFK4zSkQe+MSA2ngGEhhkjj5eLil5qRbFovTml2u7sthtluR5RIqGs/MpHP60FpIsUeajOfu/tRc3AuRqOAl0fDJ7t5sp/9zgA/Oth05qWFe0lWl9WWu/tJGSwmUh1xI/eScj6ipGKAeuceRPKtS1PthpHVv3l1sEF2WMFExtvuZLZHQpeRhaT8jSUuGwvOZvqu6jRSiVwFjqF6U3popDVwirjKVy+9TxIP8XSr6LbEX97GUWSf0mFYB+nSo3Mi77Z6r03p6bfHL9p3UTzsaKq5kGdBcbaU7gugYebISU++AsFQ5qqQfs9kKK46lx1Hn92cA/MdK1VTSTMP5jWyD/y747fReCRgNtvotZ1U07b9W6LuDrved7JfthURg8LzKlgHz99hNQnuB2pp1kavVt01plmdqiNqUacgwZEgqVKXwcSnS2nCgnmlI58yevKpv1uFmJZFSpDaQ1eYKm3OE5UsuhITjwzxEZ6c6XfeO57D7TbvQ9X6kg3CRrpxKZRjW5RWhJI4UvuIJCQrHTnzxnHjWVJ4TnWyO05Ov9eiwdqeqnLZzcX+tXb226kcgmBLfLrEqJxcQZfaWULAJ6jIyPQ0kW/9rbs+9utY7XCEPSGpmEpCQC6yhSvzyc+tO5szP0Vc9vrbJ2+ZaY0w4pxTTDYUksuFRLiVhRJC+I8wSevLlSidqyI1G3tuDjacLk2yE64c54lYWjPpyQn8K7PgN5jxlzWiwIOiWlGhUMUUVuO2e3d03P1XEsdtSpKVELlSSnKI7IPvLUflyA8TgVdc87KeN0sjrAJcNubBNR2K9GO27Td61VIaKTdXhGjEjmWms5V8iskfw01NYvTlgg6WsVvs1tZDMCAylllA8EgePqep9TWUqkcRrDW1L6h36j8uSfY3K0BaDvFuIxtloO531YSuUlIZiNE/2j6+SB8h1PoDXMW5XKXeLhKuE+QuRNluKeeeWcla1HJJpoe2xqhcm/6c02059xEjqnPJB6rWeBGfklKvxpVqsfg7DmwUfpLh6z/olpnEmyp4VJ3Zxn/Z++Wjz3fGJKpUXrjh446+f/LUZEVs+2d6/o5uXoy6FSkoj3aOlZSATwOK7tXX0XW4x+Ey4bOwc2lYM9oJ2N99jTvbG060jUkmwu2d915L8VrjcXxpCcA8SeHp19ajbaXaHRmyW7Nttbe5twu+ppUWQy1YneHhSko41LUlJPAcAkZwSTUndpFOu/6rLinbpUz+kXftIKYKAp9bBJDgQT0PQ5HPAOKUPZW6QNqd29Pzbvt/q+HJlxlW+43G9Ml5aZrzqQmQhZQAhOOJJ6nB6nnXzxTh74CM2muicGoTv6aDTV01dHZeX3gvC3nklOClTjLSgB5jhwc/OtnZ7trPCnBPU+JrUkA2zce+RlZCbnBjTmx4FTZUy5+XdflWxhYNa5lNGH+K7V3U8vLotfPM4OLdgtX3hjmdtVrJpAytFrfeT+82nvB+aKla0TU3K2Q5qPhlMoeHyUkK/wA60a7Q03O03CCpPEmXGdYKT48aCnH517NlrgbptNoqUpRU4q0xUrJ68aW0pV+aTW9oX5mkKakfmBW90UUU+nEVz4/0lf8At23P91P/AJs10Hrnx/pLP9v25/up/wDNmhCevRZKtH6fJ6m3xyf/AMSazlYLRX/c7T3/AKfH/wCkms7QhFBooNCEv+8bypu8m1VsRj7hu4TlfQNNj/5GpfKgahrUyhce0/AbwVC1abQST4KdkOH+TYqW+LIzWuqX2fZJTvs6y1vX6kus6bjZ996/QSgDxKFlw/8AKgn6VoFo2stKN89aa0uE6wXdu8wmYbcCQpC5ENaEpStJSrIAUE/PnW73lw3DXWkrek+5EEq6u8+QCW+5QT/E8f8ACaQjdZ/ZTcrdexTLFfrpaZF5ushWo7jNUW0Rkgclo4gQMkHGCR06VDGDI4gG2img1bdOX2ctqLrtBo262e7uw1PzLq/ObbhOKWy02sJCUgqSD0HlSw9qWf7bvfeW+74fYoMKPxZ+P7tTmfT+0x9KbvZLQ9s2/wBurfarNf3tQW51xyWzcnFBRfS4cjBBIIAAHLypHd6rz9v7w63mhRLSbiYrfEBnhZQlrw8MpOK6rgKMy4w+TkGleS7LRam7s0buDbbWH2dPLYsN8Whl9wp95h3ohzP6vPBHkc+FQlmqEBXXoauSvooq2nfTy7O+Sga6xuuwCVcQyDkV9VEnZt1svXG09nkyXS7PgcUCStRyVKbwAo+pQUmpbqjqiB1PK6F+7SR8E8DcXXPDtbrcXvTPS5nhRBipb/d4Sf5k1B1Mx21NOOQdc2K9pSe5uMEsKV/xGlHl/hWPwpZquLhyVr8MhLeQt8EnJo4qpqzIStxhYb/tAOJH7w5j8wKu0Zx0rbyNEjCw7HRYXXTvRGqG9Y6Hseooie9FygtyQgYBKyn3k+h4gRUBJ7dOhImnFyrrBusfUKZD0dVgZT3rqChZSkqcPCgZ+uDnkav9jjWqZ2l7vo95YEiyvmVFSTzVGeJJwP2XOIfxCtq0r2frZpTerWOvnWrM/arwlMiMxIjhT0GR8TriVq91CSeI8ufPwxz+ba+jZQ1k1NMNWnTum2FZJ3VqdUaQ0TuUiBKtyEK/1yJJSQ4xGfPdOcWQMhCw2vOOgzW+cZBKeWRyOKiLb3fy1717m6y0XAgsy9JQ7cUicpz35iuLu3CEnmWyFYGOnDk9RW6aUfkwUStO3F0uXOy8LJcPWRHI+5f9eJI4T5KQoVrZWOZuLJKtYdHrbGnClxs+SgfzrwbAKS1tvHt4+K13C4QCD1AbluhI/wAPDVwqODz8K8eyqxHk7hW84zG1K+6EjwS+yy9/Naqdwx93OaVhh77uLVLFFfJWAaFOJSniUcJHieQrcLar6rnx/pLP9v25/up/82af5Nwirc7tEllS/wBUOAn8M0gP+kr5ztuv7qf/ADZoQnq0V/3O09/6fH/6Sazta9o99DGjrB3iggCBHBKjgf2SfOs0zNjyP7J9pz9xYV/KhCv1QnAzXz3gzg5HzqqyCk48eVCEt1ocFy7R+4swK4kwWoMBJ8uFgLUPxdNS2HCTgc/QVDG1LyrhrndC7kgpkahktoUOhS0UtD/p1vuq7pLajR7Tal8F8vCzFiK69yMZcfPo2jKv3uEeNaOpfeYgrVTEvmyhate9yLToGzax3MvIcetzLqLRbmmSCuUGlEEN+HvvKc5+TefCoasWutu97deRdGbj7Mp01fru2XIEl5stuPjhKgCtKUKBIBwrmMjHKpJ3w0XpjcHQUXbGwaustt1TZ3mJFthvzUd6XGkkBC054sqCjzwTxHOK1/bXaXdfU+6ti13vBLtwc0qwti2xoSkFTrigR3i+Dl4knPMnHIAVkwsbGXvNj/bWWya0MbZMCsWjbHQajHb9nsmm7cS2jJJQ0ygkDJ6nl9Sa5hJkOzSuW+AJEta5DuBj33FFavzUadntfazbs230bTDLoE3Ub/AtIV7witYW4ceRVwI/iNJPnJzVn/hxh5ZBJWvHtGw8kvM8E2VcUGq5qhqzdOihsE5PYeuSl2zWFtJJQ1IYkJ8hxJUk/wDwFNwKU3sQWlbdj1ZdFJIS/LZjJVjkeBBUfzWKbKqY4jLTik2Xr9gnYvYCiPtFbar3I25mR4jYXeLcr22EMc1rSDxN/wAScj54rm0pJQopUCkgkEKGCD5H1rsAoZGDSfdpPs4yZU2XrLR8TvlO5duFtZR75V4vNgdSeqk9c8x41ueE8bZSuNHUGzXHQ9D/ACo5o83rBKABRijxI8QcfWq1Z4AIuEtZbTtrrt3bPXVp1OhKnI0UqZnNJPNyK5gOD1KcBY9U0+27OmZ25u1F/s2nLv7JLu8LMWU0vCHQcKCSrwQ4PdJHgqub5pseyZu53jTe3V5kffsJU5ZnV/71oZUuPn9ZHNSfNPL9Gqw4+wJzgMTgFy32vLqponWNitI0l2XN5vZtNsu6n09o1qxIcbjOWhBVLAdx3pW4gDjKsDPEvHLkBTEM3i0azS0rS2q7RqDXOl2u5liK4ECWk4DrTiQTwhak5SQSELA58zV/tFT9dWnay53Hb1ak3yI4284G2UuumMCS7wJUCCcYJGM4BxzpE9FOz4GvLFpfaUW28atTcPtBGrIjbrHHHcbSXY77Svd7pBJ4s5HgOdVpGHVTC95Hu+6ZIDgQV0Ks14i32EiXEK+DiLbjbieFxlxPJba0/orSeRH+RFaDqK4670DfNRXTRtrs9wRf/ZnD7a46FMOtNd0r7tA9/ICTniHTGK3696VuLT4v9nVFF/UyhM6Nkoi3LhTjn1KFjmEuczjkrI6eezX+Je+/ZQlyPcYmBKgSU8EiMT+sn9U+ChlJ8DSEMroXF7FqCx9K/M3ZQ07b99tb87trd6zx19WbQyiIEj94ZX/zVYT2ZGrqsu6g1Fdrm6o5UqXOeeyfkpWKYKis3Vsz+dlg6skdzUEjsqaKQPdZWlfXjSSFD5EHNLV2v9Cv6EVo6Km+XO4291Mox482Qp5MbBbzwFRJAVkZGccq6F1pmvNqNH7mqgK1VZk3FVvCxHJecb7vjxxfAoZzwjr5VnBWPY+7ySFlDVua+7zooc072bVangwrjq+93G5yXWW1gS5S3OAFAwACcAYxyArYj2V9GIGWEvMOjotpxSCD55BFTiy0iOy2y2MNtpCEjPQAYA/AV91C+slc6+ZRuqXk3uoWj7M6l06OPTG4mpbfjo19oLdbz+47xJP4VlI+rt8tJAe0Kseq4qMZEmOYr6gPJbXu5+aKlWsZeL9BsaGfaVLckyVcEaIwjvH5Kv1W0DmfU8gOpIFSR10zTvdZx1c17DVR1tPFe0Rou4XDUiREkSJj8x9CcrJW86pYQgYytRKgkADJNbc3FubNv1NcwuOncSXaHnIFrDqVOwWeFXcoCc9S4AVr6FYA6JFZuw6SnTJzF91EllE9jiVAt7au8Zt5Ix3hPIOPYOCroBkJ8SVu132ZdxrW4/uZYtcSrpunGkuSnA0gNNSGB8LLST0wkfAfdV8PkT7GGSvJc6xT8EOU+I/cpZSnROotvLXZbZZ9QL34eu3C68eMl1anSSSSeWBjwCgoEk4rqnZ2pFusNvauchLkyPEbTKfUeSnEoHGonyyCc1pu06Zmo9M2rV2p9HW+wayns5lcDCA+odAoqxxp4hg8BJIzg1FHat3dTZ7WdBWWVi63JoKuTrR5xoqujefBbnT0SD5ithBTS4rVMo4W6315pl5AFyly3h3D/rQ3CuV+a4hamgIVtST/AOHQo+/6Fasr+RFaMBmqABIwAAkcgB4Cq19DYdRsoaZlNFs0WSJdc3RVQCogAFRPIAdTVOtMx2XNjX9TXeLrO+xSmxQV95BadTj2x5J5Lx+ok88+JA8qwxPEY8Pp3TynyHU9F6xhebBNBsPoVe322FjtUlvu7gtBlS0nql5z3lD6DCfpUlVRIwMVWqRmmdNI6V+7jc+9PgWFkVQjIxVaKjXqhnc/s16Q3JdcnBpVova8kzoSQO9P/EQfdX8+R9aUjdzs537aW1fbEq52+faVSEx0ONFSHeJWeHKCMeB6E10dpde2gytzaaGtIylq7sKUfIFDgz+JFdPw/jNZFUxUok9QkCx136dFFKwEEpCOor6ZeejPsyI0h2NKYWl1l9lRStpaTlK0kdCDXyKCKth8bJGljxcFKJ99ht94u6FvFruimomsITfE/HR7qJSBy79r0/WT1SfQg1u1h280bt/dNRaktVphWuXdT7RcJSRwp4UjJ9EJyCogYGedc2YE+ZabhEuNulvQ7jDcDseUwcOMrHiD+RB5EcjTqbLdpi264THsGrDGtWp1jgac+GLPPQcBJ91w+LZ5H9HPQUnxRwhLQONRRgmI7gcv4TDHg6FWr92wtA2rcuxacjXmBLsEph0z7yysqZiPf7pPEORBweIjOOJPrUtPW/TG5lrg3m3zW5KcK9hvNrf4XW+eD3bo6jIIKTlJ8RSUbhdizWd/1nq7UVhgWeDaTc1uwLN3/At9ji5lOPdRnBISojr4U7GobxC2w25mXSLZwLdYYHeJt0ZaGuFtAHuJKuQI6ep8ya42ojiaGiE6lS2FrLDPx9W6dB9piI1HAT0kQQlmYkftsEhCz6oUM/q18w9a2GbJEX7QbiTuhiT0mK+D+44AT9M1sc/W1u05pi33rVDrdn9qSylbCyp1SHnE57lISkqWocxyHgeVUumotJ3HRp1HPfgXDTHch8SVtCQ2tBOBwpwSSVYSABnPLGaVyuJuWpSWiY83GioG1KTxgEo8FDmD9apwnyP4VrumtLbfaqivzrLanoKo7pYfbZ9ptz0dwAEoW1lJScKB6dCKyx2rsQVkyNQgHw+3JeP+pXjmtboUucPdycvbwK4SrhISOZJHIVgJ+srDb3vZ13Nh6ZnAiRMyH1HyDbYUr8RWQk7a6Ohx3plxtqpjUdpTjip8l+ThCQSfdWsg8h0xVnbnV1mvSlQbTpqRYErhs3GO2uOy0mVFdJCHU90ogZKTlKsKHLlQGgguGtlm2g/2K8jSdWaiGLfb06fhK/8AG3UBySR5ojJOEn+8V/DWC1vrLRfZ+sib9dpC594mSWYjj7z6XZr4UrCj+y2hPErhSEp5Yxk1vukdd23WMzUUSE3JaesU72F5MhotlZ4AoOJBAPArJwfHhNJv2q+zhfNcbsszNAaXfffnW8zLq+Fpajl7jUkYUrCQ4pKRkA8zg460xTRtdJkk0CcigZHsE81vuUK6xm5UCWxKjOAKQ6w4laVJPQ5Br1VA3ZI24a2+2lhCTZpNt1LOddN1RLSQ8XEOKSlOD0SEgEAdeInnmvrertIWrbwSLJYu4u2rRyLQPFHg+ZfUD8Q6hscz44FZU+HTVdT6PSguP93XrtCs9vjvdb9p7QhiOGp2qZ6CYUAnISPF53ybB+qjyHiRz+mTJVzmyZ8+S5LuEt1T0iQ6crdcUeaj/IDoBgCr94u9w1Bd5l3u012ddJq+8fkun3lnwAHQJHQJHICvFmr24Y4ZiwaHM7WV25+wS75Lm3JFZ7TWitRaxkpj2Cyzrk4f/p2iUj5r+EfU1jLUFKusAJSFKMlrCSMgnjHKut0OKzGYS0yy2y2B8DaQlI+gqTiDHpMKyNjYCXX3O1lnGwPSlbT9jsx5DF1168y8lOFotEdWU5/4rnj+6nl5mm4ixWYTDUeO0hphpIQ22hISlCRyAAHQVdAwMVWqyr8RqK+TxKh1z8h5BMtaGiwRRRRSSyRRRRQhFRpv/pRzWW02pLcw33ktDHtTCQOZcaIWB9eEj61JdfK08aSDgg+B8alhmdDI2Vm7SD8F4RcWK5AAg8x0NVqYO0btO7tlrd9+Iwoaeu61SIbgHutqPNbPpwk5H7JHlUO1eVBVx1sDZ4zof7ZIOBabKvKvhaEuJKVJCknwNfeKMU05jSMrl5qpo2w7TOq9ABiBd+81Jp5scIafcxMYT+w6fjA/VX9CKZeJq/bbtCWhi2s3t4SUOIf+zjIVEloWkhQ4micOpBAOCFoOKQDFUU2lSm1kfeNEKQsclIPmCOYPyrhsZ4Go61xmpfy3/L4KRkrhuuhG732rHu2k7raYV3fuVkdflsPxrX7ewta2i0WnWkuIWlSkqylY5A8iRmsFO0NqZjs827TLsZ6Rd5BacvDNvSj2hLbsgvSRHCiE96ni9055FPI5xStaW363G0ckNQ9Suz4gGExrwj2tCRjolRIWP8VS3Y+2lcmUlN+0Ww/yPC5ap3Dnyyh0H1/Srg6vg3F6UBrGB4HMH7KcStO6l3bmxass23OtOAXQ3+dKmyLS/fVJM97LKUx1SMEgKCk8I6e6lOQKxe0MeS1qyKbXF1bGtX2Ji+/0hD47y58aOEo7483Md7xKb9zHDjwrHwe2RoOS4pEq06lhoCc8a4SHQT5YQsn8qyB7Xu2pxld/5DA/7Kc5fnWnkwfEwXB1M7Xsss7eql62Q72i4XFy63ODKt7qsRY0eEWlMpyfjWVq7w4wOgH41CuzWy952+1ZGnKgRLa0zFkx7jLjXJb6b0pbnGyoRykJjpbyogDpxcIGOdfM7tj6CjKQIts1JNSoZKkQktcPphawT9K0i99tSa4gpsOim2lf+bdZ2R1/UaHl6/jUlLw5jEt2RwHXrovPEb1TIw9EiHr256rTdpZcuEZmI5BbQhLC0tBXApXIqUsFasHI5YGDivFrzdrRu27Kv6Q3qOxKAyiA197KcJ6cLKfe5+ZwPWki1V2hNytXIWy/qNVriK5GPZmhGCh4guZKyP4hUZBsd668SVPOnicdWSpaz5qUckn5mupw78OqmUh1c8NHQbqN0g5KdNz+1FqjW3fW/Tge03YljhUtKwZ76fVwcmh6Jyf2qgpDaWxhKcZJJ8SSepJ8T6mvuq1ZmGYLSYZH4dMy3fmVCXE7oooqma2livFum0OnF6r3P0rakIKkuz23HAB0bbPeLP4JrqWnPP1pRexrti4wiZry4MlPtCDEtoWOZRn7xwehICQfIGm8qpeLK5tVXZGG4YLe/mm4m5WoooormFKiiiihCKKKKEIooooQtc1voiz7gadmWO9xu+hSQOY5LbUPhWg+CgeYNc8929iNSbUzXHXmXJ+nlLwxc2UZSB4B0D4FfPkfA+FdL6tSY7cphbLzaHGnBwrQsApUPEEHqK3OD43UYW+8erTuD9uhWD4w8LkFnFGa6I6w7KO3mqn1yY8F+yy1klS7a5wIJPm2oFI+gFRhM7Dae9HsWtFhrykQAVf8qwK76n4xw+Rt5LtPcX+iWMD+ST7PrQTinXs3YhsMdYVd9T3KYPFEZpDAP1PEa2PX/Za0rJ26mWvSlqahX1k+0xpTjhW484kf2a1qyeFQyPIHBofxjh/iNYwEgnU2sB3QIH80glFX5cV6BKfiyWXGJLCy2604kpUhQOCkg9CKs5rrGlrgHN2KhI6qlGKrmjNeosFSiq5oJoRZUozUv9n/AGbd3W1SDOacTpm3nimvJJT3px7rKVfrHqcdB9KmHWPYlUt1x/SWokttnmIlzRnh9A4j/NNaKq4joKWo9GldY9baDsVI2JxbcJP80Zqc5fZG3OjPcDcG2SUZ/tGp6Qk/4gD+VZKz9jfcGe6kTpFmtzR6qXILqh/CgYP416eIcNaLmcLwRv6Je8mpw2J7PNy3OmMXa7NOw9Itq4lPK91c3B5ob8eE4wV9PLJpidvuyFpHSr7U2+vO6hnIwpKJCQ3GSf7sZ4v4iflTCMsojtJabSlDaAEpSkYCQOgA8BXK4xxhnYYKHnu4/YfdTMg5uVm32+La4UeHDYQxFjtpbaabGEoSBgADyxXqoorgd9UyiiiihCKKKKEIooooQiiiihCKKKKEIooooQigjIxRRQhL9vx2boW5XeXyxKag6oSn3yrk1NAHILx0V0wv6GkY1PpO9aMui7ZfrbIt8xJxwPJwF+qVdFD1Ga60YrD6g05Z9SwVQrxbIlwiKH9lJaSsD5Z6H1FdNg/FNRhzBFIM7By5jyKifEHarkqRiiugV/7JG2s1DkmNDuNuPM93DmEI/BYVWi2Hsq6KuN2MaROvqmRnkJLafzDddvFxXSyMz5HfL91AYCDZJv4Z8KmfaTs4ao3HlMzJ0Z6z6cBClS5CClx9Pk0g8ySP0jyHrTk6U7P23mipLT9v06w9Mb5pkzlGQ4kjHMceQD8gKlHA8q53E+NJHgxUbcvc7+4LNkHNywekdI2fRFii2WyQ0RYEYe6hPMqJ6qUeqlHxJrO0UVwrnFxLnG5KZVMCq4xRRWNkIooor1CKKKKEIooooQiiiihC/9k=" alt="Bataraza National High School logo">
+    <div class="mid">
+      <h1>College Entrance Exam Reviewer</h1>
+      <p class="sub">Bataraza National High School · Grade 12</p>
+      <span class="gift">Presented by Nexus Organization</span>
+    </div>
+    <img class="l-nexus" src="data:image/jpeg;base64,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" alt="Nexus Organization logo">
+  </header>
+
+  <!-- ================= HOME ================= -->
+  <section id="home" class="screen active">
+    <div class="card hero">
+      <h2>Ready for your college entrance exam?</h2>
+      <p>Review for <b>MSU-SASE, PSU, WPU, UPCAT</b> and other university admission tests. Works 100% offline.</p>
+      <div class="install" id="installBox" style="display:none">
+        <div><b>📲 Install this reviewer as an app</b><small id="installHint">Opens like a normal app and works offline.</small></div>
+        <button class="btn orange" id="installBtn" style="width:auto;padding:12px 18px">Install</button>
+      </div>
+      <div class="readiness" id="homeStats"></div>
+      <div class="coverage">
+        <span class="chip">🔢 Math</span><span class="chip">🔬 Science</span><span class="chip">📖 English</span>
+        <span class="chip">🧩 Abstract Reasoning</span><span class="chip">🌏 General Information</span>
+      </div>
+      <div class="tiles">
+        <button class="tile" onclick="go('learnMenu')"><span class="ic">📘</span><span><h3>Study Notes</h3><small>Learn the key concepts first, then practice</small></span></button>
+        <button class="tile" onclick="go('practiceMenu')"><span class="ic">📚</span><span><h3>Practice Mode</h3><small>Instant feedback and explanation on every item</small></span></button>
+        <button class="tile feature" onclick="go('mockSetup')"><span class="ic">⏱️</span><span><h3>Mock Exam</h3><small>Timed, like the real test, with a full score report</small></span></button>
+        <button class="tile" onclick="startMistakes()"><span class="badge" id="mistakeBadge" style="display:none">0</span><span class="ic">🔁</span><span><h3>Review My Mistakes</h3><small>Retake only the items you got wrong until you master them</small></span></button>
+        <button class="tile" onclick="go('progress')"><span class="ic">📈</span><span><h3>My Progress</h3><small>See your strong and weak topics</small></span></button>
+        <button class="tile" onclick="go('tips')"><span class="ic">🎯</span><span><h3>Exam Tips &amp; Study Plan</h3><small>Test-taking strategies and a 4-week plan</small></span></button>
+      </div>
+    </div>
+    <p class="footer">Save this file on your phone or tablet to use it offline anytime.</p>
+  </section>
+
+  <!-- ================= LEARN ================= -->
+  <section id="learnMenu" class="screen">
+    <div class="qhead"><button class="back" onclick="go('home')">← Home</button><span>Study Notes</span><span></span></div>
+    <div class="card">
+      <h2>Study Notes</h2>
+      <p class="lead">Read the notes for an area, then test yourself right away.</p>
+      <div class="subjects" id="learnGrid"></div>
+    </div>
+  </section>
+
+  <section id="learn" class="screen">
+    <div class="qhead"><button class="back" onclick="go('learnMenu')">← Notes</button><span id="learnTitle"></span><span></span></div>
+    <div class="card notes" id="learnBody"></div>
+    <div class="card"><button class="btn lg" id="learnPractice">Practice this area now →</button></div>
+  </section>
+
+  <!-- ================= PRACTICE ================= -->
+  <section id="practiceMenu" class="screen">
+    <div class="qhead"><button class="back" onclick="go('home')">← Home</button><span>Practice Mode</span><span></span></div>
+    <div class="card">
+      <h2>Choose an area to practice</h2>
+      <p class="lead">One question at a time, with instant feedback and an explanation.</p>
+      <label style="font-weight:800;display:block;margin:4px 0 2px">Items per session</label>
+      <div class="seg" id="pLenSeg">
+        <button data-len="10">10</button><button data-len="20" class="on">20</button><button data-len="0">All</button>
+      </div>
+      <div class="subjects" id="subjGrid" style="margin-top:16px"></div>
+    </div>
+  </section>
+
+  <section id="practice" class="screen">
+    <div class="qhead">
+      <button class="back" onclick="endPractice()">✓ End session</button>
+      <span id="pTitle">Practice</span>
+      <span id="pScore">Score: 0</span>
+    </div>
+    <div class="progress"><i id="pBar"></i></div>
+    <div class="card">
+      <div class="meta"><span class="tag" id="pTag">—</span><span class="qnum" id="pNum"></span></div>
+      <div id="pPassage"></div>
+      <p class="qtext" id="pQ"></p>
+      <div class="opts" id="pOpts"></div>
+      <div class="feedback" id="pFb"><b id="pFbT"></b><div class="exp" id="pFbE"></div></div>
+      <button class="btn lg" id="pNext" style="margin-top:16px;display:none" onclick="pNextQ()">Next →</button>
+    </div>
+  </section>
+
+  <section id="practiceDone" class="screen">
+    <div class="qhead"><span>Session complete</span></div>
+    <div class="card">
+      <div class="scorebig"><div class="ring" id="pdRing"><div class="inner"><div class="pct" id="pdPct">0%</div><div class="lbl">correct</div></div></div></div>
+      <div class="verdict" id="pdVerdict"></div>
+      <p style="text-align:center;color:var(--muted)" id="pdDetail"></p>
+      <div id="pdFocus"></div>
+      <div class="btn-row">
+        <button class="btn secondary" onclick="go('home')">Home</button>
+        <button class="btn" id="pdAgain">Another session</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= MOCK ================= -->
+  <section id="mockSetup" class="screen">
+    <div class="qhead"><button class="back" onclick="go('home')">← Home</button><span>Mock Exam</span><span></span></div>
+    <div class="card">
+      <h2>Set up your mock exam</h2>
+      <p class="lead">Mixed questions from all areas. No feedback until you submit, just like the real exam.</p>
+      <div class="preset">
+        <b>🎓 Recommended preset</b>
+        <button class="btn" style="margin-top:10px;background:var(--gen)" onclick="startMockPreset()">MSU-SASE Style Mock: 50 items, 50 minutes ▶</button>
+        <p class="hint" style="margin-bottom:0">Balanced Math, Science, English, Abstract Reasoning and General Information, the areas usually reported by MSU-SASE takers.</p>
+      </div>
+      <label style="font-weight:800;display:block;margin:16px 0 4px">Or build your own: length</label>
+      <div class="seg" id="lenSeg">
+        <button data-len="20" class="on">Quick<br><small>20 items</small></button>
+        <button data-len="40">Standard<br><small>40 items</small></button>
+        <button data-len="100">Marathon<br><small>100 items</small></button>
+      </div>
+      <label style="font-weight:800;display:block;margin:16px 0 4px">Timer</label>
+      <div class="seg" id="timeSeg">
+        <button data-mode="timed" class="on">Timed<br><small>1 min per item</small></button>
+        <button data-mode="untimed">No timer<br><small>relaxed</small></button>
+      </div>
+      <button class="btn lg" style="margin-top:20px" onclick="startMock()">Start Mock Exam ▶</button>
+      <p class="hint" id="mockBestLine"></p>
+    </div>
+  </section>
+
+  <section id="mock" class="screen">
+    <div class="qhead">
+      <button class="back" onclick="quitMock()">← Exit</button>
+      <span id="mPos">1 / 20</span>
+      <span class="timer" id="mTimer">—</span>
+    </div>
+    <div class="progress"><i id="mBar"></i></div>
+    <div class="card">
+      <div class="meta"><span class="tag" id="mTag">—</span><button class="flagbtn" id="mFlag" onclick="toggleFlag()">⚑ Mark for review</button></div>
+      <div id="mPassage"></div>
+      <p class="qtext" id="mQ"></p>
+      <div class="opts" id="mOpts"></div>
+      <div class="btn-row">
+        <button class="btn secondary" id="mPrev" onclick="mGo(-1)">← Previous</button>
+        <button class="btn" id="mNext" onclick="mGo(1)">Next →</button>
+      </div>
+      <details style="margin-top:16px">
+        <summary style="cursor:pointer;font-weight:700;color:var(--muted)">All items (tap to jump) · <span id="mCounts"></span></summary>
+        <div class="navgrid" id="mNav"></div>
+        <p class="hint">Blue = answered · Yellow line = marked for review</p>
+      </details>
+      <button class="btn lg" style="margin-top:16px;background:var(--good)" onclick="confirmSubmit()">✓ Submit exam</button>
+    </div>
+  </section>
+
+  <section id="mockResult" class="screen">
+    <div class="qhead"><span>Mock Exam Results</span></div>
+    <div class="card">
+      <div class="scorebig"><div class="ring" id="mrRing"><div class="inner"><div class="pct" id="mrPct">0%</div><div class="lbl" id="mrRaw">0/0</div></div></div></div>
+      <div class="verdict" id="mrVerdict"></div>
+      <p style="text-align:center;color:var(--muted);margin:4px 0 10px" id="mrTime"></p>
+      <div class="bdown" id="mrBreak"></div>
+      <div id="mrFocus"></div>
+      <div class="btn-row">
+        <button class="btn secondary" onclick="toggleReview()">See all answers</button>
+        <button class="btn orange" onclick="startMistakes()">Review my mistakes</button>
+      </div>
+      <button class="btn" style="margin-top:12px" onclick="go('home')">Home</button>
+    </div>
+    <div class="card" id="mrReview" style="display:none">
+      <h2>Answer review</h2>
+      <div id="mrReviewList"></div>
+    </div>
+  </section>
+
+  <!-- ================= PROGRESS ================= -->
+  <section id="progress" class="screen">
+    <div class="qhead"><button class="back" onclick="go('home')">← Home</button><span>My Progress</span><span></span></div>
+    <div class="card" id="progBody"></div>
+  </section>
+
+  <!-- ================= TIPS ================= -->
+  <section id="tips" class="screen">
+    <div class="qhead"><button class="back" onclick="go('home')">← Home</button><span>Exam Tips &amp; Study Plan</span><span></span></div>
+    <div class="card notes">
+      <h3>🎯 During the exam</h3>
+      <ul>
+        <li><b>Answer the easy items first.</b> Don't get stuck. If an item takes more than about a minute, mark it, move on, and come back later.</li>
+        <li><b>Use elimination.</b> Cross out the choices that are clearly wrong. Removing two choices doubles your chance of getting the item right.</li>
+        <li><b>Plug in the choices.</b> For algebra items, try substituting each answer choice into the equation. It's often faster than solving.</li>
+        <li><b>Estimate first.</b> In math, round the numbers to see which choice is reasonable before computing exactly.</li>
+        <li><b>Reading passages:</b> read the question first, then the passage, so you know what to look for. The answer is always supported by the text, not by outside opinion.</li>
+        <li><b>Watch the key words:</b> NOT, EXCEPT, LEAST, MOST, ALWAYS. Many students miss items just by misreading these.</li>
+        <li><b>Blank vs. guess:</b> read the instructions. If wrong answers are <i>not</i> penalized, never leave an item blank. If there is a penalty, guess only when you can eliminate at least one choice.</li>
+        <li><b>Shade carefully.</b> Check that the item number on your answer sheet matches the question, especially after skipping items.</li>
+        <li><b>Watch the clock.</b> Check the time at the quarter, half, and three-quarter points of each subtest.</li>
+      </ul>
+      <div class="tip">💡 Mock Exam has a <b>⚑ Mark for review</b> button so you can practice the skip-and-return habit.</div>
+
+      <h3>🎒 Before exam day</h3>
+      <ul>
+        <li>Prepare everything the <b>test permit</b> requires, usually the permit, a valid ID, No. 2 pencils, an eraser and a sharpener. Follow your university's exact list.</li>
+        <li>Visit or locate the testing center a day before. Know the travel time from Bataraza so you arrive at least 30–45 minutes early.</li>
+        <li>Sleep 7–8 hours the night before. A rested mind scores better than a crammed one.</li>
+        <li>Eat a light, filling breakfast and bring water and a small snack if allowed.</li>
+        <li>Do a light review of formulas the night before. Don't learn new topics anymore.</li>
+      </ul>
+
+      <h3>📅 4-week study plan (about 1 hour a day)</h3>
+      <table>
+        <tr><th>Week</th><th>Focus</th><th>Daily routine</th></tr>
+        <tr><td><b>1</b></td><td>Math + Abstract Reasoning</td><td>Read the notes (15 min) → practice 20 items → review mistakes</td></tr>
+        <tr><td><b>2</b></td><td>Science + General Information</td><td>Read the notes (15 min) → practice 20 items → review mistakes</td></tr>
+        <tr><td><b>3</b></td><td>English + your weakest area</td><td>Practice 20 items → check <i>My Progress</i> → reread notes on weak topics</td></tr>
+        <tr><td><b>4</b></td><td>Full mock exams</td><td>One MSU-SASE style mock every other day → <i>Review My Mistakes</i> on the days between</td></tr>
+      </table>
+      <div class="tip">🎯 Target: score <b>75% or higher</b> on the MSU-SASE style mock at least twice before the actual exam.</div>
+
+      <h3>🧠 Study habits that work</h3>
+      <ul>
+        <li><b>Test yourself.</b> Answering questions builds memory better than rereading.</li>
+        <li><b>Spread it out.</b> One hour a day for four weeks beats ten hours the night before.</li>
+        <li><b>Learn from mistakes.</b> Read every explanation, especially for items you guessed right.</li>
+        <li><b>Study with a buddy.</b> Explain an answer to a classmate. If you can teach it, you know it.</li>
+        <li><b>Read in English daily.</b> News articles and stories build vocabulary and reading speed for every subtest.</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="footer" id="globalFoot">
+    <img src="data:image/jpeg;base64,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" alt=""> Bataraza National High School × Nexus Organization <img src="data:image/jpeg;base64,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" alt="">
+    <br>A gift to the Grade 12 students. Good luck on your entrance exams!
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   QUESTION BANK. Easy to expand!
+   { s:"math|sci|eng|logic|gen", topic:"...", p:"(optional passage)",
+     q:"question", o:["A","B","C","D"], a:index_of_correct(0-3), e:"explanation" }
+   Choices are shuffled automatically, so a: always points to the
+   correct choice as written here.
+   ============================================================ */
+const BANK = [
+  /* ---------- MATH ---------- */
+  {s:"math",topic:"Percent",q:"What is 25% of 80?",o:["15","20","25","30"],a:1,e:"25% = ¼. ¼ × 80 = 20."},
+  {s:"math",topic:"Percent",q:"What is 15% of 200?",o:["15","25","30","45"],a:2,e:"15% = 0.15. 0.15 × 200 = 30."},
+  {s:"math",topic:"Percent",q:"What percent of 60 is 15?",o:["20%","25%","30%","40%"],a:1,e:"15 ÷ 60 = 0.25 = 25%."},
+  {s:"math",topic:"Percent",q:"A price rose from ₱50 to ₱60. What is the percent increase?",o:["10%","15%","20%","25%"],a:2,e:"Increase = 10. Percent = 10/50 × 100 = 20%. Always divide by the ORIGINAL value."},
+  {s:"math",topic:"Percent",q:"A ₱500 shirt has a 10% discount. What is the sale price?",o:["₱400","₱450","₱490","₱510"],a:1,e:"Discount = 10% × 500 = ₱50. 500 − 50 = ₱450."},
+  {s:"math",topic:"Fractions",q:"What is 2/3 + 1/6?",o:["3/9","1/2","5/6","3/6"],a:2,e:"Make denominators equal: 2/3 = 4/6. 4/6 + 1/6 = 5/6."},
+  {s:"math",topic:"Fractions",q:"Express 0.25 as a fraction in lowest terms.",o:["1/2","1/3","1/4","1/5"],a:2,e:"0.25 = 25/100 = 1/4."},
+  {s:"math",topic:"Fractions",q:"What is 3/4 of 24?",o:["12","16","18","20"],a:2,e:"3/4 × 24 = (3 × 24) ÷ 4 = 72 ÷ 4 = 18."},
+  {s:"math",topic:"Ratio & Proportion",q:"Divide 40 in the ratio 3:5. What is the larger share?",o:["15","20","25","30"],a:2,e:"Total parts = 3+5 = 8. Larger share = 5/8 × 40 = 25."},
+  {s:"math",topic:"Ratio & Proportion",q:"If 5 pencils cost ₱20, how much do 8 pencils cost?",o:["₱28","₱30","₱32","₱40"],a:2,e:"Each pencil = 20 ÷ 5 = ₱4. 8 × ₱4 = ₱32."},
+  {s:"math",topic:"Ratio & Proportion",q:"Simplify the ratio 12 : 18 to lowest terms.",o:["2 : 3","3 : 4","4 : 6","6 : 9"],a:0,e:"Divide both by 6: 12÷6 : 18÷6 = 2 : 3."},
+  {s:"math",topic:"Algebra",q:"Solve: 3x − 7 = 14",o:["x = 5","x = 6","x = 7","x = 8"],a:2,e:"3x = 14 + 7 = 21, so x = 21 ÷ 3 = 7."},
+  {s:"math",topic:"Algebra",q:"Solve: 2(x + 3) = 16",o:["x = 4","x = 5","x = 6","x = 7"],a:1,e:"Divide by 2: x + 3 = 8, so x = 5."},
+  {s:"math",topic:"Algebra",q:"Solve: x / 4 = 12",o:["3","16","40","48"],a:3,e:"Multiply both sides by 4: x = 12 × 4 = 48."},
+  {s:"math",topic:"Algebra",q:"Solve: 4x = 36",o:["7","8","9","12"],a:2,e:"x = 36 ÷ 4 = 9."},
+  {s:"math",topic:"Algebra",q:"If x + y = 10 and x − y = 4, what is x?",o:["3","5","6","7"],a:3,e:"Add the two equations: 2x = 14, so x = 7 (and y = 3)."},
+  {s:"math",topic:"Algebra",q:"Which is a root of x² − 5x + 6 = 0?",o:["1","3","4","5"],a:1,e:"Factor: (x−2)(x−3)=0. The roots are x = 2 or x = 3."},
+  {s:"math",topic:"Geometry",q:"Find the area of a rectangle with length 8 and width 5.",o:["13","26","40","45"],a:2,e:"Area = length × width = 8 × 5 = 40."},
+  {s:"math",topic:"Geometry",q:"Find the area of a triangle with base 10 and height 6.",o:["16","30","60","80"],a:1,e:"Area = ½ × base × height = ½ × 10 × 6 = 30."},
+  {s:"math",topic:"Geometry",q:"Find the perimeter of a square with side 9.",o:["18","27","36","81"],a:2,e:"Perimeter of a square = 4 × side = 4 × 9 = 36."},
+  {s:"math",topic:"Geometry",q:"A right triangle has legs 6 and 8. How long is the hypotenuse?",o:["10","12","14","48"],a:0,e:"c² = 6² + 8² = 36 + 64 = 100, so c = √100 = 10."},
+  {s:"math",topic:"Geometry",q:"Find the area of a circle with radius 7 (use π ≈ 22/7).",o:["44","144","154","196"],a:2,e:"Area = πr² = (22/7) × 7 × 7 = 154."},
+  {s:"math",topic:"Geometry",q:"Find the circumference of a circle with radius 7 (use π ≈ 22/7).",o:["22","44","88","154"],a:1,e:"Circumference = 2πr = 2 × (22/7) × 7 = 44."},
+  {s:"math",topic:"Geometry",q:"Two angles of a triangle are 50° and 60°. What is the third?",o:["60°","70°","80°","90°"],a:1,e:"Angles of a triangle add to 180°. 180 − 50 − 60 = 70°."},
+  {s:"math",topic:"Word Problems",q:"A car travels 150 km in 3 hours. What is its speed?",o:["30 kph","45 kph","50 kph","60 kph"],a:2,e:"Speed = distance ÷ time = 150 ÷ 3 = 50 kph."},
+  {s:"math",topic:"Word Problems",q:"A class of 30 students has 18 girls. How many are boys?",o:["10","12","15","18"],a:1,e:"Boys = 30 − 18 = 12."},
+  {s:"math",topic:"Word Problems",q:"Find the simple interest on ₱1,000 at 5% per year for 2 years.",o:["₱50","₱100","₱150","₱200"],a:1,e:"I = P × r × t = 1000 × 0.05 × 2 = ₱100."},
+  {s:"math",topic:"Number Sense",q:"What comes next: 2, 4, 8, 16, __ ?",o:["20","24","32","64"],a:2,e:"Each term doubles (×2). 16 × 2 = 32."},
+  {s:"math",topic:"Number Sense",q:"Evaluate: 2 + 3 × 4",o:["14","20","24","9"],a:0,e:"Multiply first (PEMDAS): 3 × 4 = 12, then 2 + 12 = 14."},
+  {s:"math",topic:"Number Sense",q:"What is −5 + 8?",o:["−13","−3","3","13"],a:2,e:"Moving 8 up from −5 gives 3."},
+  {s:"math",topic:"Number Sense",q:"What is the Least Common Multiple (LCM) of 4 and 6?",o:["8","10","12","24"],a:2,e:"Multiples of 4: 4, 8, 12... Multiples of 6: 6, 12... The smallest common one is 12."},
+  {s:"math",topic:"Number Sense",q:"Which of the following is a prime number?",o:["9","15","17","21"],a:2,e:"17 has only two factors (1 and 17). The others are composite."},
+  {s:"math",topic:"Exponents & Roots",q:"What is the value of 2³ × 2²?",o:["16","24","32","64"],a:2,e:"Add the exponents: 2³⁺² = 2⁵ = 32."},
+  {s:"math",topic:"Exponents & Roots",q:"What is √144?",o:["11","12","14","72"],a:1,e:"12 × 12 = 144, so √144 = 12."},
+  {s:"math",topic:"Statistics",q:"What is the average of 10, 20, 30, and 40?",o:["20","25","30","100"],a:1,e:"Sum = 100, divided by the count (4): 100 ÷ 4 = 25."},
+  {s:"math",topic:"Statistics",q:"Find the median of 2, 3, 5, 7, 9.",o:["3","5","7","26"],a:1,e:"When the numbers are in order, the middle value is 5."},
+
+  /* ---------- SCIENCE ---------- */
+  {s:"sci",topic:"Biology",q:"Which organelle is called the 'powerhouse of the cell'?",o:["Nucleus","Ribosome","Mitochondrion","Vacuole"],a:2,e:"The mitochondrion produces the cell's energy (ATP)."},
+  {s:"sci",topic:"Biology",q:"The process plants use to make food from sunlight is called:",o:["Respiration","Photosynthesis","Digestion","Transpiration"],a:1,e:"Photosynthesis makes glucose using sunlight, CO₂, and water."},
+  {s:"sci",topic:"Biology",q:"Which plant cell part contains chlorophyll for photosynthesis?",o:["Chloroplast","Cell wall","Nucleus","Mitochondrion"],a:0,e:"The chloroplast holds chlorophyll, which absorbs light."},
+  {s:"sci",topic:"Biology",q:"Which gas do plants release during photosynthesis?",o:["Carbon dioxide","Oxygen","Nitrogen","Hydrogen"],a:1,e:"Plants take in CO₂ and release oxygen during photosynthesis."},
+  {s:"sci",topic:"Biology",q:"Which gas do plants absorb for photosynthesis?",o:["Oxygen","Carbon dioxide","Nitrogen","Helium"],a:1,e:"Plants absorb carbon dioxide (CO₂) to make food."},
+  {s:"sci",topic:"Biology",q:"What is the largest organ of the human body?",o:["Liver","Heart","Lungs","Skin"],a:3,e:"The skin is the largest organ of the body."},
+  {s:"sci",topic:"Biology",q:"What is the basic unit of heredity?",o:["Cell","Gene","Tissue","Atom"],a:1,e:"A gene carries inherited information from parent to offspring."},
+  {s:"sci",topic:"Biology",q:"How many chromosomes does a normal human body cell have?",o:["23","44","46","48"],a:2,e:"Humans have 46 chromosomes (23 pairs)."},
+  {s:"sci",topic:"Biology",q:"Which plant part mainly absorbs water and minerals from the soil?",o:["Leaves","Stem","Roots","Flower"],a:2,e:"The roots absorb water and minerals and anchor the plant."},
+  {s:"sci",topic:"Biology",q:"Which blood component mainly carries oxygen?",o:["White blood cells","Platelets","Red blood cells","Plasma"],a:2,e:"Red blood cells carry oxygen using the protein hemoglobin."},
+  {s:"sci",topic:"Biology",q:"Which organ system transports blood throughout the body?",o:["Digestive system","Respiratory system","Circulatory system","Nervous system"],a:2,e:"The circulatory system (heart and blood vessels) moves blood around the body."},
+  {s:"sci",topic:"Biology",q:"Which organ lets humans breathe and exchange gases?",o:["Liver","Lungs","Kidneys","Stomach"],a:1,e:"The lungs take in oxygen and release carbon dioxide."},
+  {s:"sci",topic:"Chemistry",q:"What is the chemical symbol for gold?",o:["Gd","Go","Au","Ag"],a:2,e:"Au, from the Latin 'aurum'. (Ag is silver.)"},
+  {s:"sci",topic:"Chemistry",q:"What is the chemical symbol for oxygen?",o:["O","Ox","Og","On"],a:0,e:"Oxygen's chemical symbol is O."},
+  {s:"sci",topic:"Chemistry",q:"Which gas is most abundant in Earth's atmosphere?",o:["Oxygen","Carbon dioxide","Nitrogen","Hydrogen"],a:2,e:"About 78% of air is nitrogen."},
+  {s:"sci",topic:"Chemistry",q:"What is the pH of a neutral substance such as pure water?",o:["0","7","10","14"],a:1,e:"pH 7 = neutral. Below 7 is acidic, above 7 is basic."},
+  {s:"sci",topic:"Chemistry",q:"What is the chemical formula of water?",o:["CO₂","H₂O","O₂","NaCl"],a:1,e:"H₂O: two hydrogen atoms and one oxygen atom."},
+  {s:"sci",topic:"Chemistry",q:"Which atomic particle carries a negative charge?",o:["Proton","Neutron","Electron","Nucleus"],a:2,e:"Electrons are negative, protons are positive, and neutrons have no charge."},
+  {s:"sci",topic:"Chemistry",q:"What is the common name of the compound NaCl?",o:["Baking soda","Table salt","Sugar","Chalk"],a:1,e:"NaCl is sodium chloride, commonly known as table salt."},
+  {s:"sci",topic:"Chemistry",q:"At what temperature (°C) does water boil at sea level?",o:["0","50","100","212"],a:2,e:"Water boils at 100°C at sea level. (212 is in °F.)"},
+  {s:"sci",topic:"Chemistry",q:"At what temperature (°C) does water freeze?",o:["0","4","32","100"],a:0,e:"Water freezes at 0°C. (32 is in °F.)"},
+  {s:"sci",topic:"Physics",q:"What is the SI unit of force?",o:["Joule","Watt","Newton","Pascal"],a:2,e:"The newton (N) is the SI unit of force, named after Isaac Newton."},
+  {s:"sci",topic:"Physics",q:"The energy of a moving object is called:",o:["Potential energy","Kinetic energy","Thermal energy","Chemical energy"],a:1,e:"Kinetic energy is the energy of motion."},
+  {s:"sci",topic:"Physics",q:"Who formulated the three Laws of Motion?",o:["Einstein","Newton","Galileo","Darwin"],a:1,e:"Isaac Newton formulated the Three Laws of Motion."},
+  {s:"sci",topic:"Physics",q:"What is the SI unit of electric current?",o:["Volt","Ampere","Ohm","Watt"],a:1,e:"The ampere (A) measures electric current."},
+  {s:"sci",topic:"Physics",q:"What force pulls objects toward the center of the Earth?",o:["Friction","Magnetism","Gravity","Tension"],a:2,e:"Gravity pulls objects toward the Earth's center."},
+  {s:"sci",topic:"Physics",q:"A push or a pull acting on an object is called a:",o:["Mass","Force","Weight","Speed"],a:1,e:"A force is any push or pull on an object."},
+  {s:"sci",topic:"Physics",q:"Which instrument is used to measure temperature?",o:["Barometer","Thermometer","Ammeter","Ruler"],a:1,e:"A thermometer measures temperature."},
+  {s:"sci",topic:"Earth & Space",q:"What is the innermost layer of the Earth?",o:["Crust","Mantle","Outer core","Inner core"],a:3,e:"From outside in: crust → mantle → outer core → inner core."},
+  {s:"sci",topic:"Earth & Space",q:"A rock formed from cooled magma or lava is called:",o:["Sedimentary","Igneous","Metamorphic","Mineral"],a:1,e:"Igneous rock forms from solidified magma or lava."},
+  {s:"sci",topic:"Earth & Space",q:"The change of liquid water into water vapor is called:",o:["Condensation","Evaporation","Precipitation","Filtration"],a:1,e:"Evaporation turns liquid water into vapor, usually because of heat."},
+  {s:"sci",topic:"Earth & Space",q:"Which gas from human activity contributes most to the greenhouse effect?",o:["Oxygen","Nitrogen","Carbon dioxide","Helium"],a:2,e:"Carbon dioxide (CO₂) from burning fossil fuels is a major greenhouse gas."},
+  {s:"sci",topic:"Earth & Space",q:"Which planet is closest to the Sun?",o:["Venus","Earth","Mercury","Mars"],a:2,e:"Mercury is the planet closest to the Sun."},
+  {s:"sci",topic:"Earth & Space",q:"What is the largest planet in the Solar System?",o:["Earth","Saturn","Jupiter","Neptune"],a:2,e:"Jupiter is the largest planet in our Solar System."},
+  {s:"sci",topic:"Earth & Space",q:"What is the natural satellite of the Earth?",o:["The Sun","Mars","The Moon","Venus"],a:2,e:"The Moon is Earth's only natural satellite."},
+
+  /* ---------- ENGLISH ---------- */
+  {s:"eng",topic:"Grammar",q:"Choose the correct form: The group of students ___ ready for the exam.",o:["is","are","were","be"],a:0,e:"'Group' is a collective noun treated as singular here, so it takes 'is'."},
+  {s:"eng",topic:"Grammar",q:"Choose the correct word: Between you and ___, this is a secret.",o:["I","me","myself","mine"],a:1,e:"After a preposition ('between'), use the object pronoun 'me'."},
+  {s:"eng",topic:"Grammar",q:"Choose the correct article: She is ___ honest woman.",o:["a","an","the","no article"],a:1,e:"'Honest' begins with a vowel sound (silent h), so use 'an'."},
+  {s:"eng",topic:"Grammar",q:"Choose the correct verb: Neither of the boys ___ present today.",o:["are","were","is","have"],a:2,e:"'Neither' is singular, so it takes the singular verb 'is'."},
+  {s:"eng",topic:"Grammar",q:"Choose the correct verb: Each of the students ___ a laptop.",o:["have","has","are having","were"],a:1,e:"'Each' is singular, so the verb is 'has'."},
+  {s:"eng",topic:"Grammar",q:"Choose the correct preposition: He is very good ___ mathematics.",o:["in","at","on","with"],a:1,e:"The correct collocation is 'good at' something."},
+  {s:"eng",topic:"Grammar",q:"Choose the correct preposition: She has been living here ___ 2015.",o:["for","since","from","at"],a:1,e:"Use 'since' with a specific starting point in time; use 'for' with a length of time."},
+  {s:"eng",topic:"Grammar",q:"Choose the correct verb: She ___ like coffee in the morning.",o:["don't","doesn't","not","didn't"],a:1,e:"With the singular subject 'she', use 'doesn't'."},
+  {s:"eng",topic:"Grammar",q:"Choose the correct verb: If I ___ you, I would study harder.",o:["am","was","were","be"],a:2,e:"For imaginary situations (subjunctive), use 'were' for all subjects: 'If I were you...'"},
+  {s:"eng",topic:"Grammar",q:"Choose the correct tense: By next year, she ___ here for a decade.",o:["works","worked","will have worked","is working"],a:2,e:"Future perfect ('will have worked') shows an action completed before a future point."},
+  {s:"eng",topic:"Grammar",q:"Which sentence is grammatically correct?",o:["He don't know the answer.","He doesn't knows the answer.","He doesn't know the answer.","He not know the answer."],a:2,e:"Use 'doesn't' with he/she/it, followed by the base form of the verb ('know')."},
+  {s:"eng",topic:"Grammar",q:"Which word is the VERB in: 'The children played in the park.'",o:["children","played","park","the"],a:1,e:"'Played' expresses the action, so it is the verb."},
+  {s:"eng",topic:"Spelling & Punctuation",q:"Choose the correctly punctuated sentence.",o:["Lets eat grandma.","Let's eat, grandma.","Lets eat, grandma","Let's eat grandma"],a:1,e:"It needs the apostrophe in 'Let's' and a comma before the name (direct address)."},
+  {s:"eng",topic:"Spelling & Punctuation",q:"Choose the word that is spelled correctly.",o:["Recieve","Receive","Receeve","Receve"],a:1,e:"Rule: 'i' before 'e' except after 'c', so 'receive'."},
+  {s:"eng",topic:"Spelling & Punctuation",q:"Choose the correctly spelled word.",o:["Accomodate","Acommodate","Accommodate","Acomodate"],a:2,e:"'Accommodate' has a double c and a double m."},
+  {s:"eng",topic:"Vocabulary",q:"Choose the SYNONYM of 'abundant'.",o:["Scarce","Plentiful","Empty","Rare"],a:1,e:"'Abundant' means existing in large amounts, or 'plentiful'."},
+  {s:"eng",topic:"Vocabulary",q:"Choose the SYNONYM of 'diligent'.",o:["Lazy","Hardworking","Careless","Slow"],a:1,e:"'Diligent' means showing careful, hardworking effort."},
+  {s:"eng",topic:"Vocabulary",q:"Choose the SYNONYM of 'benevolent'.",o:["Cruel","Kind","Lazy","Angry"],a:1,e:"'Benevolent' means kind and well-meaning. Root: bene = good."},
+  {s:"eng",topic:"Vocabulary",q:"Choose the SYNONYM of 'meticulous'.",o:["Careless","Very careful","Quick","Noisy"],a:1,e:"'Meticulous' means showing great attention to detail."},
+  {s:"eng",topic:"Vocabulary",q:"Choose the SYNONYM of 'candid'.",o:["Frank","Secretive","Shy","Angry"],a:0,e:"'Candid' means honest and straightforward, or 'frank'."},
+  {s:"eng",topic:"Vocabulary",q:"Choose the ANTONYM of 'generous'.",o:["Kind","Giving","Stingy","Helpful"],a:2,e:"'Generous' means willing to give; its opposite is 'stingy'."},
+  {s:"eng",topic:"Vocabulary",q:"Choose the ANTONYM of 'ancient'.",o:["Old","Modern","Historic","Aged"],a:1,e:"'Ancient' means very old; its opposite is 'modern'."},
+  {s:"eng",topic:"Vocabulary",q:"Choose the ANTONYM of 'transparent'.",o:["Clear","Opaque","Bright","Thin"],a:1,e:"'Transparent' means see-through; its opposite is 'opaque' (light cannot pass through)."},
+  {s:"eng",topic:"Idioms & Figures of Speech",q:"What does the idiom 'hit the books' mean?",o:["To throw books","To study hard","To buy books","To quit school"],a:1,e:"'Hit the books' means to study seriously."},
+  {s:"eng",topic:"Idioms & Figures of Speech",q:"What does the idiom 'break the ice' mean?",o:["To start a conversation in an awkward situation","To break something cold","To end a friendship","To make a mistake"],a:0,e:"'Break the ice' means to ease tension and get people talking."},
+  {s:"eng",topic:"Idioms & Figures of Speech",q:"'The wind whispered through the trees.' What figure of speech is used?",o:["Simile","Hyperbole","Personification","Onomatopoeia"],a:2,e:"Giving a human action (whispering) to a non-human thing (wind) is personification."},
+  {s:"eng",topic:"Idioms & Figures of Speech",q:"'She is as brave as a lion.' What figure of speech is used?",o:["Metaphor","Simile","Personification","Irony"],a:1,e:"A comparison using 'like' or 'as' is a simile."},
+  {s:"eng",topic:"Analogy",q:"Complete the analogy: Puppy : Dog :: Kitten : ___",o:["Mouse","Cat","Lion","Pet"],a:1,e:"A puppy is a young dog; a kitten is a young cat."},
+  {s:"eng",topic:"Analogy",q:"Complete the analogy: Hot : Cold :: Up : ___",o:["High","Over","Down","Top"],a:2,e:"The relationship is opposites. The opposite of 'up' is 'down'."},
+  {s:"eng",topic:"Analogy",q:"Complete the analogy: Author : Book :: Painter : ___",o:["Brush","Canvas","Painting","Color"],a:2,e:"An author creates a book; a painter creates a painting (creator : creation)."},
+  {s:"eng",topic:"Reading Comprehension",p:"PASSAGE: The Philippines is an archipelago made up of more than 7,000 islands located in Southeast Asia. Its waters hold some of the richest marine biodiversity in the world, which is why many scientists study its coral reefs and fish species.",
+    q:"According to the passage, how many islands make up the Philippines?",o:["About 700","Exactly 7,000","More than 7,000","Fewer than 1,000"],a:2,e:"The passage states the Philippines is made up of 'more than 7,000 islands.'"},
+  {s:"eng",topic:"Reading Comprehension",p:"PASSAGE: The Philippines is an archipelago made up of more than 7,000 islands located in Southeast Asia. Its waters hold some of the richest marine biodiversity in the world, which is why many scientists study its coral reefs and fish species.",
+    q:"Why do many scientists study the country's waters?",o:["Because they are very deep","Because of their rich marine biodiversity","Because there are few fish","Because they are in Europe"],a:1,e:"The passage links the scientists' interest to the waters' rich marine biodiversity."},
+  {s:"eng",topic:"Reading Comprehension",p:"PASSAGE: Bees play a vital role in nature. As they move from flower to flower collecting nectar, they carry pollen that helps plants produce fruits and seeds. Without bees, many crops that people rely on for food would be much harder to grow.",
+    q:"According to the passage, what do bees carry that helps plants reproduce?",o:["Water","Nectar","Pollen","Soil"],a:2,e:"The passage says bees 'carry pollen that helps plants produce fruits and seeds.'"},
+  {s:"eng",topic:"Reading Comprehension",p:"PASSAGE: Bees play a vital role in nature. As they move from flower to flower collecting nectar, they carry pollen that helps plants produce fruits and seeds. Without bees, many crops that people rely on for food would be much harder to grow.",
+    q:"What does the passage suggest would happen without bees?",o:["Flowers would grow faster","Many crops would be harder to grow","There would be more fruit","Nothing would change"],a:1,e:"The passage states that without bees, 'many crops... would be much harder to grow.'"},
+  {s:"eng",topic:"Reading Comprehension",p:"PASSAGE: Mangrove forests grow along coastlines where the sea meets the land. Their tangled roots protect shorelines from erosion and strong waves during storms. They also serve as nurseries for many young fish and crabs. In recent years, coastal communities in Palawan have planted mangroves to restore damaged shores.",
+    q:"What is the main idea of the passage?",o:["Mangroves are hard to plant","Mangroves protect coasts and support marine life","Storms are common in Palawan","Fish live only in mangroves"],a:1,e:"Every sentence supports one idea: mangroves are valuable to coasts and sea creatures. The main idea covers the whole passage, not just one detail."},
+  {s:"eng",topic:"Reading Comprehension",p:"PASSAGE: Mangrove forests grow along coastlines where the sea meets the land. Their tangled roots protect shorelines from erosion and strong waves during storms. They also serve as nurseries for many young fish and crabs. In recent years, coastal communities in Palawan have planted mangroves to restore damaged shores.",
+    q:"As used in the passage, the word 'nurseries' means:",o:["Hospitals for babies","Places where young animals grow safely","Stores that sell plants","Schools for children"],a:1,e:"Context clue: 'nurseries for many young fish and crabs' means places where young sea creatures grow and are protected."},
+
+  /* ---------- ABSTRACT / LOGICAL REASONING ---------- */
+  {s:"logic",topic:"Number Series",q:"What comes next: 1, 3, 6, 10, __ ?",o:["12","13","15","16"],a:2,e:"Add increasing amounts: +2, +3, +4, +5. So 10 + 5 = 15."},
+  {s:"logic",topic:"Number Series",q:"What comes next: 1, 4, 9, 16, __ ?",o:["20","24","25","36"],a:2,e:"These are perfect squares: 1², 2², 3², 4², 5² = 25."},
+  {s:"logic",topic:"Number Series",q:"What comes next: 2, 5, 10, 17, __ ?",o:["24","26","28","34"],a:1,e:"Pattern n² + 1: 1+1=2, 4+1=5, 9+1=10, 16+1=17, 25+1=26."},
+  {s:"logic",topic:"Number Series",q:"What comes next: 3, 6, 12, 24, __ ?",o:["30","36","48","60"],a:2,e:"Each term doubles (×2). 24 × 2 = 48."},
+  {s:"logic",topic:"Number Series",q:"What comes next: 2, 6, 12, 20, __ ?",o:["24","28","30","36"],a:2,e:"Differences grow: +4, +6, +8, so next is +10. 20 + 10 = 30."},
+  {s:"logic",topic:"Number Series",q:"What comes next: 1, 1, 2, 3, 5, 8, __ ?",o:["11","12","13","15"],a:2,e:"Fibonacci: each term is the sum of the two before it. 5 + 8 = 13."},
+  {s:"logic",topic:"Number Series",q:"What comes next: 100, 95, 90, 85, __ ?",o:["84","82","80","75"],a:2,e:"Each term decreases by 5: 85 − 5 = 80."},
+  {s:"logic",topic:"Number Series",q:"What comes next: 7, 14, 21, 28, __ ?",o:["32","34","35","42"],a:2,e:"Multiples of 7: add 7 each time. 28 + 7 = 35."},
+  {s:"logic",topic:"Number Series",q:"What comes next: 81, 27, 9, 3, __ ?",o:["0","1","2","6"],a:1,e:"Divide by 3 each time: 3 ÷ 3 = 1."},
+  {s:"logic",topic:"Number Series",q:"What comes next: 1, 2, 4, 7, 11, __ ?",o:["14","15","16","17"],a:2,e:"Differences: +1, +2, +3, +4, then +5. 11 + 5 = 16."},
+  {s:"logic",topic:"Number Series",q:"What comes next: 64, 32, 16, 8, __ ?",o:["0","2","4","6"],a:2,e:"Halve each time: 8 ÷ 2 = 4."},
+  {s:"logic",topic:"Number Series",q:"What comes next: 5, 10, 15, 20, __ ?",o:["22","24","25","30"],a:2,e:"Count by 5s: 20 + 5 = 25."},
+  {s:"logic",topic:"Letter Series",q:"What comes next: A, C, E, G, __ ?",o:["H","I","J","K"],a:1,e:"Skip one letter each time: A, C, E, G, I."},
+  {s:"logic",topic:"Letter Series",q:"What comes next: Z, Y, X, W, __ ?",o:["U","V","T","S"],a:1,e:"The alphabet in reverse: Z, Y, X, W, V."},
+  {s:"logic",topic:"Letter Series",q:"What comes next: J, F, M, A, M, __ ?",o:["A","J","M","S"],a:1,e:"First letters of the months: January, February, March, April, May, June → J."},
+  {s:"logic",topic:"Letter Series",q:"What comes next: B, E, H, K, __ ?",o:["L","M","N","O"],a:2,e:"Positions 2, 5, 8, 11 (+3 each). Next is 14 = N."},
+  {s:"logic",topic:"Letter Series",q:"What comes next: AB, CD, EF, __ ?",o:["FG","GH","HI","GF"],a:1,e:"Consecutive letters in pairs: AB, CD, EF, GH."},
+  {s:"logic",topic:"Letter Series",q:"What comes next: AZ, BY, CX, __ ?",o:["DW","DV","EW","DY"],a:0,e:"First letters go forward (A, B, C, D); second letters go backward (Z, Y, X, W)."},
+  {s:"logic",topic:"Coding",q:"If CAT is coded as 3-1-20, how is DOG coded?",o:["4-15-7","4-14-7","3-15-7","4-15-8"],a:0,e:"Each letter = its position in the alphabet: D=4, O=15, G=7."},
+  {s:"logic",topic:"Odd One Out",q:"Which does NOT belong: apple, banana, carrot, mango?",o:["Apple","Banana","Carrot","Mango"],a:2,e:"Apple, banana, and mango are fruits; the carrot is a vegetable."},
+  {s:"logic",topic:"Odd One Out",q:"Which does NOT belong: triangle, square, circle, rectangle?",o:["Triangle","Square","Circle","Rectangle"],a:2,e:"A circle has no straight sides or corners; the others are polygons."},
+  {s:"logic",topic:"Odd One Out",q:"Which does NOT belong: dog, cat, eagle, cow?",o:["Dog","Cat","Eagle","Cow"],a:2,e:"The eagle is a bird; the others are mammals."},
+  {s:"logic",topic:"Odd One Out",q:"Which number does NOT belong: 4, 6, 9, 10?",o:["4","6","9","10"],a:2,e:"9 is odd; the others are even numbers."},
+  {s:"logic",topic:"Analogy",q:"Complete the analogy: Hand : Glove :: Foot : ___",o:["Shoe","Sock","Toe","Leg"],a:1,e:"A glove fits closely over a hand; a sock fits closely over a foot."},
+  {s:"logic",topic:"Analogy",q:"Complete the analogy: Book : Library :: Painting : ___",o:["Artist","Museum","Frame","Color"],a:1,e:"Books are kept and displayed in a library; paintings in a museum."},
+  {s:"logic",topic:"Analogy",q:"Complete the analogy: Fish : Water :: Bird : ___",o:["Nest","Air","Tree","Feather"],a:1,e:"A fish moves through water; a bird moves through air."},
+  {s:"logic",topic:"Deduction",q:"All roses are flowers, and all flowers are plants. Which must be true?",o:["All plants are roses","All roses are plants","No rose is a plant","Flowers are not plants"],a:1,e:"Chain: roses → flowers → plants, so all roses are plants."},
+  {s:"logic",topic:"Deduction",q:"Everyone in the room is wearing a uniform. Juan is in the room. Therefore:",o:["Juan is a teacher","Juan is wearing a uniform","Juan is not in the room","Juan has no uniform"],a:1,e:"If everyone in the room wears a uniform and Juan is in the room, then Juan wears a uniform."},
+  {s:"logic",topic:"Deduction",q:"Ana is taller than Ben. Ben is taller than Carlo. Who is the shortest?",o:["Ana","Ben","Carlo","Cannot be determined"],a:2,e:"Order: Ana > Ben > Carlo, so Carlo is the shortest."},
+  {s:"logic",topic:"Deduction",q:"Some students are athletes. All athletes are disciplined. Which must be true?",o:["All students are disciplined","Some students are disciplined","No student is disciplined","All disciplined people are athletes"],a:1,e:"The students who are athletes must be disciplined, so at least some students are disciplined."},
+  {s:"logic",topic:"Directions & Time",q:"You face north, turn right, then turn right again. Which direction are you facing?",o:["North","East","South","West"],a:2,e:"North → (right) East → (right) South."},
+  {s:"logic",topic:"Directions & Time",q:"If today is Monday, what day will it be 10 days from now?",o:["Wednesday","Thursday","Friday","Saturday"],a:1,e:"7 days later is Monday again; 3 more days is Thursday."},
+  {s:"logic",topic:"Comparison",q:"Which number is the largest?",o:["0.5","0.45","0.405","0.5001"],a:3,e:"Compare place by place: 0.5001 is slightly greater than 0.5, and both are greater than the others."},
+
+  /* ---------- GENERAL INFORMATION ---------- */
+  {s:"gen",topic:"Philippine History",q:"Who is the national hero of the Philippines?",o:["Andres Bonifacio","Jose Rizal","Apolinario Mabini","Emilio Aguinaldo"],a:1,e:"Dr. Jose Rizal is widely recognized as the national hero of the Philippines."},
+  {s:"gen",topic:"Philippine History",q:"On what date was Philippine independence declared in 1898?",o:["June 12","July 4","August 21","November 30"],a:0,e:"Independence from Spain was declared on June 12, 1898, in Kawit, Cavite."},
+  {s:"gen",topic:"Philippine History",q:"Who was the first President of the Philippines?",o:["Manuel Quezon","Emilio Aguinaldo","Jose Laurel","Manuel Roxas"],a:1,e:"Emilio Aguinaldo was the first President of the Philippines."},
+  {s:"gen",topic:"Philippine History",q:"Who founded the Katipunan?",o:["Jose Rizal","Andres Bonifacio","Apolinario Mabini","Marcelo del Pilar"],a:1,e:"Andres Bonifacio founded the Katipunan in 1892."},
+  {s:"gen",topic:"Philippine History",q:"Who is known as the 'Brains of the Katipunan'?",o:["Emilio Jacinto","Apolinario Mabini","Andres Bonifacio","Graciano Lopez Jaena"],a:0,e:"Emilio Jacinto is the 'Brains of the Katipunan.' (Mabini is the 'Brains of the Revolution.')"},
+  {s:"gen",topic:"Philippine History",q:"Which hero is called the 'Sublime Paralytic'?",o:["Jose Rizal","Apolinario Mabini","Juan Luna","Gregorio del Pilar"],a:1,e:"Apolinario Mabini, also called the 'Brains of the Revolution,' was known as the Sublime Paralytic."},
+  {s:"gen",topic:"Philippine History",q:"Who was the first woman President of the Philippines?",o:["Gloria Macapagal Arroyo","Corazon Aquino","Imelda Marcos","Leni Robredo"],a:1,e:"Corazon 'Cory' Aquino became President in 1986, after the EDSA People Power Revolution."},
+  {s:"gen",topic:"Philippine History",q:"In what year did the EDSA People Power Revolution take place?",o:["1972","1983","1986","1992"],a:2,e:"The EDSA People Power Revolution happened in February 1986."},
+  {s:"gen",topic:"Philippine History",q:"The Philippines was named after which Spanish king?",o:["Charles I","Philip II","Ferdinand VII","Alfonso XIII"],a:1,e:"The islands were named 'Las Islas Filipinas' after Philip II of Spain."},
+  {s:"gen",topic:"Literature & Arts",q:"Who wrote the novel 'Noli Me Tangere'?",o:["Francisco Balagtas","Jose Rizal","Nick Joaquin","Carlos Romulo"],a:1,e:"Jose Rizal wrote Noli Me Tangere and El Filibusterismo."},
+  {s:"gen",topic:"Literature & Arts",q:"Who wrote 'Florante at Laura'?",o:["Jose Rizal","Francisco Balagtas","Andres Bonifacio","Lope K. Santos"],a:1,e:"Francisco Balagtas (Francisco Baltazar) wrote Florante at Laura."},
+  {s:"gen",topic:"Literature & Arts",q:"Who painted the 'Mona Lisa'?",o:["Michelangelo","Leonardo da Vinci","Vincent van Gogh","Pablo Picasso"],a:1,e:"Leonardo da Vinci painted the Mona Lisa."},
+  {s:"gen",topic:"Government & Civics",q:"Which is NOT one of the three branches of the Philippine government?",o:["Executive","Legislative","Judicial","Military"],a:3,e:"The three branches are Executive, Legislative, and Judicial."},
+  {s:"gen",topic:"Government & Civics",q:"How many senators make up the Philippine Senate?",o:["12","24","100","250"],a:1,e:"The Philippine Senate has 24 senators."},
+  {s:"gen",topic:"Government & Civics",q:"In what year was the current Philippine Constitution ratified?",o:["1935","1973","1987","1998"],a:2,e:"The present Constitution was ratified in 1987."},
+  {s:"gen",topic:"Government & Civics",q:"What is the official currency of the Philippines?",o:["Dollar","Peso","Ringgit","Baht"],a:1,e:"The Philippine peso (₱) is the official currency."},
+  {s:"gen",topic:"Philippine Geography",q:"What is the capital of the Philippines?",o:["Cebu","Davao","Manila","Quezon City"],a:2,e:"Manila is the capital of the Philippines."},
+  {s:"gen",topic:"Philippine Geography",q:"What is the capital city of Palawan?",o:["Coron","Puerto Princesa","Brooke's Point","El Nido"],a:1,e:"Puerto Princesa City is the capital of Palawan."},
+  {s:"gen",topic:"Philippine Geography",q:"Which UNESCO World Heritage Site is located in Palawan?",o:["Banaue Rice Terraces","Puerto Princesa Underground River","Chocolate Hills","Mayon Volcano"],a:1,e:"The Puerto Princesa Subterranean River National Park is a UNESCO World Heritage Site. (Tubbataha Reefs is another one in Palawan.)"},
+  {s:"gen",topic:"Philippine Geography",q:"What is the longest river in the Philippines?",o:["Pasig River","Cagayan River","Agusan River","Abra River"],a:1,e:"The Cagayan River (Rio Grande de Cagayan) is the longest river in the Philippines."},
+  {s:"gen",topic:"Philippine Geography",q:"What is the highest mountain in the Philippines?",o:["Mount Mayon","Mount Pulag","Mount Apo","Mount Kanlaon"],a:2,e:"Mount Apo in Mindanao is the highest mountain in the Philippines."},
+  {s:"gen",topic:"Philippine Geography",q:"What is the largest island in the Philippines?",o:["Luzon","Mindanao","Samar","Palawan"],a:0,e:"Luzon is the largest island in the Philippines."},
+  {s:"gen",topic:"National Symbols",q:"What is the national flower of the Philippines?",o:["Rose","Sampaguita","Gumamela","Orchid"],a:1,e:"The sampaguita is the national flower of the Philippines."},
+  {s:"gen",topic:"National Symbols",q:"What is the national bird of the Philippines?",o:["Maya","Philippine Eagle","Kalaw","Parrot"],a:1,e:"The Philippine Eagle is the national bird."},
+  {s:"gen",topic:"National Symbols",q:"Who composed the music of the Philippine national anthem?",o:["Jose Palma","Julian Felipe","Francisco Santiago","Nicanor Abelardo"],a:1,e:"Julian Felipe composed the music; Jose Palma wrote the original Spanish lyrics."},
+  {s:"gen",topic:"National Symbols",q:"What is the national language of the Philippines?",o:["English","Spanish","Filipino","Cebuano"],a:2,e:"Filipino is the national language; English is also an official language."},
+  {s:"gen",topic:"World",q:"What is the largest ocean on Earth?",o:["Atlantic","Indian","Arctic","Pacific"],a:3,e:"The Pacific Ocean is the largest ocean on Earth."},
+  {s:"gen",topic:"World",q:"Which is the largest continent by land area?",o:["Africa","Asia","Europe","North America"],a:1,e:"Asia is the largest continent by both area and population."},
+  {s:"gen",topic:"World",q:"How many continents are there?",o:["5","6","7","8"],a:2,e:"There are 7 continents."},
+  {s:"gen",topic:"World",q:"Where is the headquarters of the United Nations?",o:["Geneva","Paris","New York City","London"],a:2,e:"The UN headquarters is in New York City."},
+  {s:"gen",topic:"World",q:"In what year was ASEAN founded, with the Philippines as a founding member?",o:["1945","1967","1986","2000"],a:1,e:"ASEAN was founded in 1967; the Philippines is a founding member."},
+  {s:"gen",topic:"Science & Discoveries",q:"Who developed the theory of relativity?",o:["Isaac Newton","Albert Einstein","Galileo Galilei","Thomas Edison"],a:1,e:"Albert Einstein developed the theory of relativity."},
+  {s:"gen",topic:"Science & Discoveries",q:"Who discovered penicillin, the first widely used antibiotic?",o:["Louis Pasteur","Alexander Fleming","Marie Curie","Charles Darwin"],a:1,e:"Alexander Fleming discovered penicillin in 1928."}
+];
+
+const SUBJECTS = {
+  math:{name:"Math", icon:"🔢", color:"var(--math)", tagc:"#2346c8"},
+  sci:{name:"Science", icon:"🔬", color:"var(--sci)", tagc:"#1a9e5c"},
+  eng:{name:"English", icon:"📖", color:"var(--eng)", tagc:"#c2410c"},
+  logic:{name:"Abstract Reasoning", icon:"🧩", color:"var(--logic)", tagc:"#7c3aed"},
+  gen:{name:"General Information", icon:"🌏", color:"var(--gen)", tagc:"#0891b2"}
+};
+
+/* ---------------- STUDY NOTES ---------------- */
+const NOTES = {
+math:`
+<h3>Fractions, decimals, percent</h3>
+<table><tr><th>Fraction</th><th>Decimal</th><th>Percent</th></tr>
+<tr><td>1/2</td><td>0.5</td><td>50%</td></tr><tr><td>1/4</td><td>0.25</td><td>25%</td></tr>
+<tr><td>3/4</td><td>0.75</td><td>75%</td></tr><tr><td>1/5</td><td>0.2</td><td>20%</td></tr>
+<tr><td>1/10</td><td>0.1</td><td>10%</td></tr><tr><td>1/3</td><td>0.333…</td><td>33⅓%</td></tr></table>
+<ul>
+<li><b>Part = Percent × Whole.</b> 15% of 200 = 0.15 × 200 = 30.</li>
+<li><b>Percent change = (new − old) ÷ old × 100.</b> Always divide by the ORIGINAL.</li>
+<li><b>Sale price</b> = price − (discount% × price). 10% off ₱500 → ₱450.</li>
+<li>Adding fractions: make the denominators equal first. 1/2 + 1/3 = 3/6 + 2/6 = 5/6.</li>
+</ul>
+<h3>Ratio and proportion</h3>
+<ul>
+<li>Split 40 in the ratio 3:5 → total parts = 8 → one part = 5 → shares are 15 and 25.</li>
+<li>Proportion: 5 pencils cost ₱20 → 1 pencil costs ₱4 → 8 pencils cost ₱32. (Find the value of ONE first.)</li>
+</ul>
+<h3>Algebra</h3>
+<ul>
+<li>Solve by <b>undoing</b> operations in reverse order. 3x − 7 = 14 → 3x = 21 → x = 7.</li>
+<li><b>Systems:</b> add or subtract the equations to remove one variable.</li>
+<li><b>Quadratics:</b> factor. x² − 5x + 6 = (x − 2)(x − 3) → x = 2 or 3. Look for two numbers that multiply to the last term and add to the middle term.</li>
+<li><b>Exponent rules:</b> aᵐ·aⁿ = aᵐ⁺ⁿ · (aᵐ)ⁿ = aᵐⁿ · a⁰ = 1.</li>
+</ul>
+<h3>Geometry formulas</h3>
+<table><tr><th>Shape</th><th>Area</th><th>Perimeter</th></tr>
+<tr><td>Rectangle</td><td>L × W</td><td>2(L + W)</td></tr>
+<tr><td>Square</td><td>s²</td><td>4s</td></tr>
+<tr><td>Triangle</td><td>½ × b × h</td><td>sum of sides</td></tr>
+<tr><td>Circle</td><td>πr²</td><td>2πr (circumference)</td></tr></table>
+<ul><li>Triangle angles add up to <b>180°</b>; a full circle is <b>360°</b>.</li>
+<li>Pythagorean theorem: <b>c² = a² + b²</b>. Common triples: 3-4-5, 6-8-10, 5-12-13.</li></ul>
+<h3>Statistics</h3>
+<ul><li><b>Mean</b> = sum ÷ count · <b>Median</b> = middle value when sorted · <b>Mode</b> = most frequent value.</li></ul>
+<div class="tip">💡 <b>Exam trick:</b> when stuck on an equation, plug each answer choice in. The one that makes the equation true is the answer.</div>`,
+
+sci:`
+<h3>Biology</h3>
+<table><tr><th>Cell part</th><th>Job</th></tr>
+<tr><td>Nucleus</td><td>Control center; holds DNA</td></tr>
+<tr><td>Mitochondrion</td><td>Makes energy (ATP), the "powerhouse"</td></tr>
+<tr><td>Chloroplast</td><td>Photosynthesis (plants only)</td></tr>
+<tr><td>Ribosome</td><td>Makes proteins</td></tr>
+<tr><td>Cell wall</td><td>Support and shape (plants)</td></tr></table>
+<ul>
+<li><b>Photosynthesis:</b> CO₂ + water + sunlight → glucose + O₂.</li>
+<li><b>Respiration:</b> glucose + O₂ → energy + CO₂ + water (the reverse).</li>
+<li>Humans have <b>46 chromosomes</b> (23 pairs). A <b>gene</b> is the unit of heredity.</li>
+<li>Body systems: circulatory (blood), respiratory (lungs), digestive (food), nervous (brain/nerves), skeletal (bones).</li>
+</ul>
+<h3>Chemistry</h3>
+<ul>
+<li>Atom: <b>proton (+)</b> and <b>neutron (0)</b> in the nucleus; <b>electron (−)</b> outside.</li>
+<li><b>pH scale:</b> 0–6 acidic · 7 neutral · 8–14 basic.</li>
+<li>Water boils at <b>100°C</b> and freezes at <b>0°C</b>.</li>
+<li>Air is about <b>78% nitrogen</b> and <b>21% oxygen</b>.</li>
+<li>Symbols to memorize: H hydrogen, O oxygen, C carbon, N nitrogen, Na sodium, K potassium, Fe iron, Au gold, Ag silver, Cu copper.</li>
+<li>Formulas: H₂O water · CO₂ carbon dioxide · NaCl table salt · O₂ oxygen gas.</li>
+</ul>
+<h3>Physics</h3>
+<ul>
+<li><b>Newton's laws:</b> (1) inertia: objects keep their state unless acted on; (2) F = m × a; (3) every action has an equal and opposite reaction.</li>
+<li>Units: force = newton (N) · energy = joule (J) · power = watt (W) · current = ampere (A) · voltage = volt (V).</li>
+<li><b>Kinetic</b> energy = motion · <b>potential</b> energy = stored (position).</li>
+</ul>
+<h3>Earth and space</h3>
+<ul>
+<li>Earth layers: <b>crust → mantle → outer core → inner core</b>.</li>
+<li>Rocks: <b>igneous</b> (cooled magma), <b>sedimentary</b> (layers), <b>metamorphic</b> (changed by heat/pressure).</li>
+<li>Water cycle: evaporation → condensation → precipitation → collection.</li>
+<li>Planets in order: Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune. Memory aid: <i>"My Very Educated Mother Just Served Us Noodles."</i></li>
+<li>The Philippines lies in the <b>Pacific Ring of Fire</b>, which is why it has many volcanoes and earthquakes.</li>
+</ul>`,
+
+eng:`
+<h3>Subject–verb agreement</h3>
+<ul>
+<li>Singular subject → singular verb: <i>She <b>doesn't</b>; He <b>has</b></i>.</li>
+<li><b>Each, every, either, neither, everyone, nobody</b> are SINGULAR: <i>Neither of the boys <b>is</b> here.</i></li>
+<li>Collective nouns (group, team, class) usually take a singular verb: <i>The team <b>is</b> ready.</i></li>
+<li>Ignore the words between the subject and the verb: <i>The box of pencils <b>is</b> on the desk.</i></li>
+</ul>
+<h3>Common grammar rules</h3>
+<ul>
+<li><b>a / an</b> depends on SOUND: <i>an hour, an honest man, a university, a uniform</i>.</li>
+<li>After a preposition, use object pronouns: <i>between you and <b>me</b>; for him and <b>her</b></i>.</li>
+<li><b>since</b> + point in time (since 2015) · <b>for</b> + length of time (for 5 years).</li>
+<li>Imaginary situations: <i>If I <b>were</b> you…</i></li>
+</ul>
+<h3>Vocabulary strategies</h3>
+<ul>
+<li>Use <b>context clues</b>: the words around an unknown word often explain it.</li>
+<li>Know the roots: <b>bene</b> = good · <b>mal</b> = bad · <b>bio</b> = life · <b>chron</b> = time · <b>graph</b> = write · <b>tele</b> = far · <b>un-/in-/dis-</b> = not.</li>
+<li>Synonym = same meaning · Antonym = opposite meaning.</li>
+<li>Commonly misspelled: accommodate, receive, necessary, separate, definitely, occurrence, embarrass.</li>
+</ul>
+<h3>Figures of speech</h3>
+<table><tr><th>Figure</th><th>Example</th></tr>
+<tr><td>Simile (like/as)</td><td>as brave as a lion</td></tr>
+<tr><td>Metaphor</td><td>Time is money.</td></tr>
+<tr><td>Personification</td><td>The wind whispered.</td></tr>
+<tr><td>Hyperbole</td><td>I've told you a million times.</td></tr>
+<tr><td>Onomatopoeia</td><td>buzz, bang, sizzle</td></tr></table>
+<h3>Analogies</h3>
+<ul><li>Name the relationship in a sentence: "A puppy is a young dog." Then apply the same sentence to the second pair.</li>
+<li>Common types: young : adult · opposite · worker : product · part : whole · item : place.</li></ul>
+<h3>Reading comprehension</h3>
+<ul>
+<li>Read the questions first, then the passage.</li>
+<li><b>Main idea</b> = what the WHOLE passage is about, not one detail.</li>
+<li>Choose the answer the passage supports, not what you personally believe.</li>
+</ul>`,
+
+logic:`
+<h3>Number series: check these patterns in order</h3>
+<table><tr><th>Pattern</th><th>Example</th></tr>
+<tr><td>Add/subtract the same number</td><td>5, 10, 15, 20 (+5)</td></tr>
+<tr><td>Multiply/divide</td><td>3, 6, 12, 24 (×2) · 81, 27, 9 (÷3)</td></tr>
+<tr><td>Growing differences</td><td>1, 2, 4, 7, 11 (+1, +2, +3, +4)</td></tr>
+<tr><td>Squares / cubes</td><td>1, 4, 9, 16, 25 · 1, 8, 27, 64</td></tr>
+<tr><td>Fibonacci</td><td>1, 1, 2, 3, 5, 8, 13 (add the previous two)</td></tr>
+<tr><td>Alternating</td><td>2, 10, 4, 20, 6, 30 (two series mixed)</td></tr></table>
+<div class="tip">💡 Write the <b>differences</b> between the terms under the series. The pattern usually appears there.</div>
+<h3>Letter series</h3>
+<ul><li>Convert letters to numbers: A=1 B=2 C=3 D=4 E=5 … M=13 … Z=26.</li>
+<li>Memory aid: <b>E</b>=5, <b>J</b>=10, <b>O</b>=15, <b>T</b>=20, <b>Y</b>=25 ("EJOTY").</li>
+<li>Check for skips (A, C, E), reverse order (Z, Y, X), or two series combined (AZ, BY, CX).</li></ul>
+<h3>Odd one out</h3>
+<ul><li>Find the trait shared by most choices (fruits, mammals, even numbers, polygons). The one without it is the answer.</li></ul>
+<h3>Deduction (syllogisms)</h3>
+<ul><li>If all A are B and all B are C, then all A are C.</li>
+<li>"Some" statements can only give "some" conclusions.</li>
+<li>Draw circles (Venn diagrams) when unsure.</li>
+<li>For ranking items (taller, older), write the names in a line from highest to lowest.</li></ul>
+<h3>Directions and calendars</h3>
+<ul><li>Turning right from north: N → E → S → W. Turning left: N → W → S → E.</li>
+<li>Days repeat every 7. For "X days from now," divide X by 7 and count only the remainder.</li></ul>`,
+
+gen:`
+<h3>Philippine history timeline</h3>
+<table><tr><th>Year</th><th>Event</th></tr>
+<tr><td>1521</td><td>Magellan's expedition reaches the Philippines; Battle of Mactan (Lapu-Lapu)</td></tr>
+<tr><td>1565</td><td>Legazpi begins Spanish colonization</td></tr>
+<tr><td>1892</td><td>Bonifacio founds the Katipunan</td></tr>
+<tr><td>1896</td><td>Philippine Revolution begins; Rizal executed Dec 30</td></tr>
+<tr><td>1898</td><td>Independence declared June 12 in Kawit, Cavite</td></tr>
+<tr><td>1946</td><td>Independence from the United States (July 4)</td></tr>
+<tr><td>1986</td><td>EDSA People Power; Corazon Aquino becomes President</td></tr>
+<tr><td>1987</td><td>Present Constitution ratified</td></tr></table>
+<h3>Heroes and their titles</h3>
+<ul>
+<li><b>Jose Rizal</b>: national hero; wrote Noli Me Tangere and El Filibusterismo.</li>
+<li><b>Andres Bonifacio</b>: founder of the Katipunan, "Father of the Philippine Revolution."</li>
+<li><b>Emilio Jacinto</b>: "Brains of the Katipunan."</li>
+<li><b>Apolinario Mabini</b>: "Brains of the Revolution," the "Sublime Paralytic."</li>
+<li><b>Emilio Aguinaldo</b>: first President.</li>
+<li><b>Melchora Aquino</b> (Tandang Sora): "Mother of the Katipunan."</li>
+</ul>
+<h3>Government</h3>
+<ul><li>Three branches: <b>Executive</b> (President) · <b>Legislative</b> (Congress: 24 senators + House of Representatives) · <b>Judicial</b> (Supreme Court).</li></ul>
+<h3>Geography and symbols</h3>
+<ul>
+<li>Capital: Manila · largest island: Luzon · highest peak: Mt. Apo · longest river: Cagayan River.</li>
+<li>National flower: sampaguita · bird: Philippine Eagle · language: Filipino · anthem music: Julian Felipe.</li>
+<li><b>Palawan:</b> capital Puerto Princesa City; home of two UNESCO World Heritage Sites, the <b>Puerto Princesa Subterranean River</b> and <b>Tubbataha Reefs</b>.</li>
+</ul>
+<h3>World facts</h3>
+<ul>
+<li>7 continents · largest continent: Asia · largest ocean: Pacific.</li>
+<li>UN headquarters: New York City · ASEAN founded 1967 (the Philippines is a founding member).</li>
+<li>Einstein: relativity · Newton: laws of motion and gravity · Fleming: penicillin · Darwin: evolution.</li>
+</ul>
+<div class="tip">💡 General Information also covers current events. Read or watch the news for 10 minutes a day in the weeks before the exam.</div>`
+};
+
+/* ---------------- UTILITIES & STORAGE ---------------- */
+function hashStr(s){let h=5381;for(let i=0;i<s.length;i++){h=((h<<5)+h+s.charCodeAt(i))|0}return 'q'+(h>>>0).toString(36)}
+BANK.forEach(q=>q.id=hashStr(q.s+'|'+(q.p||'')+'|'+q.q));
+const BYID={}; BANK.forEach(q=>BYID[q.id]=q);
+const store={
+  get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+};
+let ST=store.get('nexusStats',null)||{sub:{},top:{},wrong:[],answered:0,mocks:[]};
+function saveST(){store.set('nexusStats',ST)}
+function record(q,ok){
+  const s=ST.sub[q.s]||(ST.sub[q.s]={c:0,t:0}); s.t++; if(ok)s.c++;
+  const tk=q.s+'::'+q.topic; const t=ST.top[tk]||(ST.top[tk]={c:0,t:0}); t.t++; if(ok)t.c++;
+  const w=new Set(ST.wrong); if(ok) w.delete(q.id); else w.add(q.id); ST.wrong=[...w].filter(id=>BYID[id]);
+  ST.answered++;
+}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function pct(c,t){return t?Math.round(c/t*100):0}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function verdict(p){
+  if(p>=90) return '🌟 Excellent! You are exam-ready!';
+  if(p>=75) return '👍 Great job! You are on track to pass.';
+  if(p>=50) return '💪 Good effort. Review your weak topics and try again.';
+  return '📖 Keep studying. Read the Study Notes first, then practice again.';
+}
+function weakTopics(minT,limit){
+  return Object.entries(ST.top).filter(([k,v])=>v.t>=minT).map(([k,v])=>{const [s,topic]=k.split('::');return {s,topic,c:v.c,t:v.t,p:pct(v.c,v.t)}})
+    .filter(x=>x.p<75).sort((a,b)=>a.p-b.p).slice(0,limit);
+}
+
+/* ---------------- NAVIGATION ---------------- */
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  ({home:renderHome,learnMenu:renderLearnMenu,practiceMenu:renderSubjects,mockSetup:renderMockSetup,progress:renderProgress}[id]||(()=>{}))();
+}
+
+/* ---------------- HOME ---------------- */
+function renderHome(){
+  let c=0,t=0; Object.values(ST.sub).forEach(v=>{c+=v.c;t+=v.t});
+  const best=ST.mocks.length?Math.max(...ST.mocks.map(m=>m.pct)):null;
+  const el=document.getElementById('homeStats');
+  el.innerHTML = t ? `<div class="stat"><b>${ST.answered}</b><span>items answered</span></div>
+    <div class="stat"><b>${pct(c,t)}%</b><span>overall accuracy</span></div>
+    <div class="stat"><b>${best==null?'—':best+'%'}</b><span>best mock score</span></div>`
+    : `<div class="stat"><b>${BANK.length}</b><span>practice items</span></div><div class="stat"><b>5</b><span>subject areas</span></div><div class="stat"><b>0%</b><span>start now!</span></div>`;
+  const b=document.getElementById('mistakeBadge');
+  b.style.display=ST.wrong.length?'block':'none'; b.textContent=ST.wrong.length;
+}
+
+/* ---------------- LEARN ---------------- */
+function renderLearnMenu(){
+  const g=document.getElementById('learnGrid'); g.innerHTML='';
+  Object.keys(SUBJECTS).forEach(k=>{
+    const s=SUBJECTS[k]; const b=document.createElement('button'); b.className='subj'; b.style.background=s.color;
+    b.onclick=()=>openNotes(k);
+    b.innerHTML=`<h3>${s.icon} ${s.name}</h3><small>Key concepts, formulas and shortcuts</small>`;
+    g.appendChild(b);
+  });
+}
+function openNotes(k){
+  document.getElementById('learnTitle').textContent=SUBJECTS[k].icon+' '+SUBJECTS[k].name;
+  document.getElementById('learnBody').innerHTML=NOTES[k];
+  document.getElementById('learnPractice').onclick=()=>startPractice(k);
+  go('learn');
+}
+
+/* ---------------- PRACTICE ---------------- */
+let sess={list:[],idx:0,score:0,answered:false,order:[],title:'',kind:'',sub:null,wrongTopics:{}};
+document.getElementById('pLenSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;[...e.currentTarget.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');});
+function renderSubjects(){
+  const g=document.getElementById('subjGrid'); g.innerHTML='';
+  Object.keys(SUBJECTS).forEach(k=>{
+    const s=SUBJECTS[k]; const n=BANK.filter(q=>q.s===k).length; const st=ST.sub[k];
+    const b=document.createElement('button'); b.className='subj'; b.style.background=s.color;
+    b.onclick=()=>startPractice(k);
+    b.innerHTML=`<h3>${s.icon} ${s.name}</h3><span class="cnt">${n} items</span>${st?`<span class="cnt">accuracy ${pct(st.c,st.t)}%</span>`:''}`;
+    g.appendChild(b);
+  });
+}
+function prioritized(list){
+  // unseen or previously-missed items first, so each session teaches something new
+  const wrong=new Set(ST.wrong), seen=store.get('nexusSeen',{});
+  return shuffle(list).sort((a,b)=>{
+    const ra=wrong.has(a.id)?0:(seen[a.id]?2:1), rb=wrong.has(b.id)?0:(seen[b.id]?2:1); return ra-rb;
+  });
+}
+function startPractice(k){
+  const len=+document.querySelector('#pLenSeg .on').dataset.len;
+  let list=prioritized(BANK.filter(q=>q.s===k)); if(len) list=list.slice(0,len);
+  beginSession(list, SUBJECTS[k].name, 'subject', k);
+}
+function startMistakes(){
+  const list=shuffle(ST.wrong.map(id=>BYID[id]).filter(Boolean));
+  if(!list.length){
+    document.getElementById('progBody').innerHTML=`<div class="empty"><div class="big">🎉</div><h2>No mistakes to review!</h2><p>Items you answer wrong in Practice or Mock Exam will appear here, so you can retake them until you get them right.</p><button class="btn" onclick="go('practiceMenu')">Go to Practice</button></div>`;
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    document.getElementById('progress').classList.add('active'); window.scrollTo(0,0); return;
+  }
+  beginSession(list.slice(0,30),'Review My Mistakes','mistakes',null);
+}
+function beginSession(list,title,kind,sub){
+  sess={list,idx:0,score:0,answered:false,order:[],title,kind,sub,wrongTopics:{}};
+  document.getElementById('pTitle').textContent=title;
+  go('practice'); showP();
+}
+function renderOpts(container,q,order,onPick){
+  container.innerHTML='';
+  order.forEach((orig,pos)=>{
+    const b=document.createElement('button'); b.className='opt'; b.dataset.orig=orig;
+    b.innerHTML=`<span class="k">${'ABCD'[pos]}</span><span>${esc(q.o[orig])}</span>`;
+    b.onclick=()=>onPick(orig,b); container.appendChild(b);
+  });
+}
+function showP(){
+  sess.answered=false; const q=sess.list[sess.idx]; sess.order=shuffle([0,1,2,3]);
+  const tag=document.getElementById('pTag'); tag.textContent=q.topic; tag.style.background=SUBJECTS[q.s].tagc;
+  document.getElementById('pNum').textContent=`Item ${sess.idx+1} of ${sess.list.length}`;
+  document.getElementById('pScore').textContent='Score: '+sess.score;
+  document.getElementById('pBar').style.width=(sess.idx/sess.list.length*100)+'%';
+  document.getElementById('pPassage').innerHTML=q.p?`<div class="passage">${esc(q.p)}</div>`:'';
+  document.getElementById('pQ').textContent=q.q;
+  renderOpts(document.getElementById('pOpts'),q,sess.order,answerP);
+  document.getElementById('pFb').className='feedback';
+  document.getElementById('pNext').style.display='none';
+}
+function answerP(orig){
+  if(sess.answered) return; sess.answered=true;
+  const q=sess.list[sess.idx]; const ok=orig===q.a;
+  [...document.getElementById('pOpts').children].forEach(b=>{
+    b.disabled=true; const o=+b.dataset.orig;
+    if(o===q.a) b.classList.add('correct'); if(o===orig && !ok) b.classList.add('wrong');
+  });
+  const fb=document.getElementById('pFb');
+  const letter='ABCD'[sess.order.indexOf(q.a)];
+  if(ok){ sess.score++; fb.className='feedback ok show'; document.getElementById('pFbT').textContent='✓ Correct!'; }
+  else { fb.className='feedback no show'; document.getElementById('pFbT').textContent=`✗ Not quite. The answer is ${letter}.`;
+    sess.wrongTopics[q.s+'::'+q.topic]=(sess.wrongTopics[q.s+'::'+q.topic]||0)+1; }
+  document.getElementById('pFbE').textContent=q.e;
+  record(q,ok); const seen=store.get('nexusSeen',{}); seen[q.id]=1; store.set('nexusSeen',seen); saveST();
+  document.getElementById('pScore').textContent='Score: '+sess.score;
+  const nx=document.getElementById('pNext'); nx.style.display='block';
+  nx.textContent=(sess.idx+1<sess.list.length)?'Next →':'See my results ✓';
+  nx.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function pNextQ(){ if(sess.idx+1<sess.list.length){ sess.idx++; showP(); window.scrollTo(0,0);} else finishPractice(); }
+function endPractice(){
+  const done=sess.idx+(sess.answered?1:0);
+  if(done===0){ go(sess.kind==='mistakes'?'home':'practiceMenu'); return; }
+  if(confirm('End this session and see your results?')) finishPractice(done);
+}
+function finishPractice(doneCount){
+  const n=doneCount||sess.list.length; const p=pct(sess.score,n);
+  document.getElementById('pdPct').textContent=p+'%';
+  document.getElementById('pdRing').style.setProperty('--p',p+'%');
+  document.getElementById('pdDetail').textContent=`${sess.score} correct out of ${n} · ${sess.title}`;
+  document.getElementById('pdVerdict').textContent=verdict(p);
+  const wt=Object.entries(sess.wrongTopics).sort((a,b)=>b[1]-a[1]).slice(0,4);
+  document.getElementById('pdFocus').innerHTML = wt.length?`<div class="focus"><b>📌 Focus next on:</b><ul>${wt.map(([k,c])=>{const [s,t]=k.split('::');return `<li>${SUBJECTS[s].icon} ${esc(t)} (${c} missed)</li>`}).join('')}</ul><p class="hint" style="margin-bottom:0">Read the Study Notes for these topics, then use <b>Review My Mistakes</b>.</p></div>`:'';
+  const again=document.getElementById('pdAgain');
+  if(sess.kind==='subject'){ again.textContent='Another session'; again.onclick=()=>startPractice(sess.sub); }
+  else { again.textContent=ST.wrong.length?`Keep reviewing (${ST.wrong.length} left)`:'All mistakes cleared! 🎉'; again.onclick=()=>ST.wrong.length?startMistakes():go('home'); }
+  go('practiceDone');
+}
+
+/* ---------------- MOCK EXAM ---------------- */
+let M={list:[],idx:0,ans:[],flags:[],orders:[],timed:true,left:0,total:0,tid:null,start:0};
+['lenSeg','timeSeg'].forEach(id=>document.getElementById(id).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;[...e.currentTarget.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');}));
+function renderMockSetup(){
+  const best=ST.mocks.length?Math.max(...ST.mocks.map(m=>m.pct)):null;
+  document.getElementById('mockBestLine').textContent=best!=null?`Your best mock score: ${best}% · Mocks taken: ${ST.mocks.length}`:'';
+}
+function buildBalanced(len){
+  const subs=Object.keys(SUBJECTS); const per=Math.floor(len/subs.length); let extra=len-per*subs.length;
+  let pool=[];
+  subs.forEach(k=>{ const take=per+(extra-->0?1:0); pool=pool.concat(shuffle(BANK.filter(q=>q.s===k)).slice(0,take)); });
+  // group by subject like a real exam (subtests), shuffled within each subject
+  return pool;
+}
+function launchMock(pool,timed,minutes){
+  clearInterval(M.tid);
+  M={list:pool,idx:0,ans:new Array(pool.length).fill(null),flags:new Array(pool.length).fill(false),
+     orders:pool.map(()=>shuffle([0,1,2,3])),timed,left:(minutes||pool.length)*60,total:(minutes||pool.length)*60,tid:null,start:Date.now()};
+  if(timed){ tick(); M.tid=setInterval(tick,1000); }
+  else { const t=document.getElementById('mTimer'); t.textContent='No timer'; t.classList.remove('warn'); }
+  go('mock'); showM();
+}
+function startMock(){
+  const len=+document.querySelector('#lenSeg .on').dataset.len;
+  const timed=document.querySelector('#timeSeg .on').dataset.mode==='timed';
+  launchMock(buildBalanced(Math.min(len,BANK.length)),timed);
+}
+function startMockPreset(){ launchMock(buildBalanced(50),true,50); }
+function tick(){
+  const t=document.getElementById('mTimer'); const m=Math.floor(M.left/60), s=M.left%60;
+  t.textContent=`⏱ ${m}:${String(s).padStart(2,'0')}`; t.classList.toggle('warn',M.left<=120);
+  if(M.left<=0){ clearInterval(M.tid); alert("Time's up! Your exam will be submitted now."); submitMock(); return; }
+  M.left--;
+}
+function showM(){
+  const q=M.list[M.idx];
+  document.getElementById('mPos').textContent=`${M.idx+1} / ${M.list.length}`;
+  document.getElementById('mBar').style.width=(M.ans.filter(a=>a!=null).length/M.list.length*100)+'%';
+  const tag=document.getElementById('mTag'); tag.textContent=SUBJECTS[q.s].name; tag.style.background=SUBJECTS[q.s].tagc;
+  document.getElementById('mPassage').innerHTML=q.p?`<div class="passage">${esc(q.p)}</div>`:'';
+  document.getElementById('mQ').textContent=q.q;
+  const box=document.getElementById('mOpts');
+  renderOpts(box,q,M.orders[M.idx],(orig)=>{ M.ans[M.idx]=orig; showM(); });
+  [...box.children].forEach(b=>{ if(+b.dataset.orig===M.ans[M.idx]) b.classList.add('sel'); });
+  document.getElementById('mFlag').classList.toggle('on',M.flags[M.idx]);
+  document.getElementById('mPrev').style.visibility=M.idx===0?'hidden':'visible';
+  document.getElementById('mNext').textContent=(M.idx+1<M.list.length)?'Next →':'Last item';
+  renderNav();
+}
+function renderNav(){
+  const g=document.getElementById('mNav'); g.innerHTML='';
+  M.list.forEach((_,i)=>{
+    const b=document.createElement('button'); b.textContent=i+1;
+    if(M.ans[i]!=null) b.classList.add('done'); if(M.flags[i]) b.classList.add('flag'); if(i===M.idx) b.classList.add('cur');
+    b.onclick=()=>{ M.idx=i; showM(); window.scrollTo(0,0); }; g.appendChild(b);
+  });
+  const a=M.ans.filter(x=>x!=null).length, f=M.flags.filter(Boolean).length;
+  document.getElementById('mCounts').textContent=`${a} answered · ${M.list.length-a} left · ${f} marked`;
+}
+function toggleFlag(){ M.flags[M.idx]=!M.flags[M.idx]; showM(); }
+function mGo(d){ const n=M.idx+d; if(n<0||n>=M.list.length) return; M.idx=n; showM(); window.scrollTo(0,0); }
+function quitMock(){ if(confirm('Exit the mock exam? Your answers will not be scored.')){ clearInterval(M.tid); go('mockSetup'); } }
+function confirmSubmit(){
+  const un=M.ans.filter(a=>a==null).length, fl=M.flags.filter(Boolean).length;
+  let msg='Submit the exam now?';
+  if(un||fl) msg=`You have ${un} unanswered and ${fl} marked item(s). Submit anyway?`;
+  if(confirm(msg)) submitMock();
+}
+function submitMock(){
+  clearInterval(M.tid);
+  let correct=0; const per={}, topicMiss={};
+  Object.keys(SUBJECTS).forEach(k=>per[k]={c:0,t:0});
+  M.list.forEach((q,i)=>{
+    const ok=M.ans[i]===q.a; per[q.s].t++; if(ok){correct++;per[q.s].c++;} else { const k=q.s+'::'+q.topic; topicMiss[k]=(topicMiss[k]||0)+1; }
+    record(q,ok);
+  });
+  const p=pct(correct,M.list.length);
+  ST.mocks.push({pct:p,raw:`${correct}/${M.list.length}`,date:new Date().toLocaleDateString()}); if(ST.mocks.length>20) ST.mocks.shift();
+  saveST();
+  document.getElementById('mrPct').textContent=p+'%';
+  document.getElementById('mrRaw').textContent=`${correct}/${M.list.length}`;
+  document.getElementById('mrRing').style.setProperty('--p',p+'%');
+  document.getElementById('mrVerdict').textContent=verdict(p);
+  const used=Math.round((Date.now()-M.start)/1000);
+  document.getElementById('mrTime').textContent=`Time used: ${Math.floor(used/60)} min ${used%60} s`;
+  const bd=document.getElementById('mrBreak'); bd.innerHTML='';
+  Object.keys(SUBJECTS).forEach(k=>{
+    if(!per[k].t) return; const sp=pct(per[k].c,per[k].t);
+    const row=document.createElement('div'); row.className='row';
+    row.innerHTML=`<span class="name">${SUBJECTS[k].icon} ${SUBJECTS[k].name}</span><span class="bar"><i style="width:${sp}%;background:${sp>=75?'var(--good)':sp>=50?'var(--accent2)':'var(--bad)'}"></i></span><span class="val">${per[k].c}/${per[k].t}</span>`;
+    bd.appendChild(row);
+  });
+  const tm=Object.entries(topicMiss).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  document.getElementById('mrFocus').innerHTML=tm.length?`<div class="focus"><b>📌 Your study priorities:</b><ul>${tm.map(([k,c])=>{const [s,t]=k.split('::');return `<li>${SUBJECTS[s].icon} <b>${esc(t)}</b>: ${c} missed</li>`}).join('')}</ul><p class="hint" style="margin-bottom:0">Open the Study Notes for these topics, then tap <b>Review my mistakes</b>.</p></div>`:'';
+  buildReview(); document.getElementById('mrReview').style.display='none';
+  go('mockResult');
+}
+function buildReview(){
+  const list=document.getElementById('mrReviewList'); list.innerHTML='';
+  M.list.forEach((q,i)=>{
+    const mine=M.ans[i], ok=mine===q.a;
+    const d=document.createElement('div'); d.className='review-item';
+    d.innerHTML=`<div class="q">${i+1}. ${esc(q.q)}</div>
+      <div class="a me ${ok?'ok':''}">Your answer: ${ok?'✓ ':'✗ '}${mine==null?'(no answer)':esc(q.o[mine])}</div>
+      ${ok?'':`<div class="a key">Correct answer: ${esc(q.o[q.a])}</div>`}
+      <div class="exp">💡 ${esc(q.e)}</div>`;
+    list.appendChild(d);
+  });
+}
+function toggleReview(){ const r=document.getElementById('mrReview'); r.style.display=r.style.display==='none'?'block':'none'; if(r.style.display==='block') r.scrollIntoView({behavior:'smooth'}); }
+
+/* ---------------- PROGRESS ---------------- */
+function renderProgress(){
+  const body=document.getElementById('progBody');
+  let c=0,t=0; Object.values(ST.sub).forEach(v=>{c+=v.c;t+=v.t});
+  if(!t){ body.innerHTML=`<div class="empty"><div class="big">📈</div><h2>No data yet</h2><p>Answer some Practice items or take a Mock Exam, and your strengths and weak topics will show up here.</p><button class="btn" onclick="go('practiceMenu')">Start practicing</button></div>`; return; }
+  const rows=Object.keys(SUBJECTS).map(k=>{const v=ST.sub[k]||{c:0,t:0}; const p=pct(v.c,v.t);
+    return `<div class="row"><span class="name">${SUBJECTS[k].icon} ${SUBJECTS[k].name}</span><span class="bar"><i style="width:${p}%;background:${!v.t?'#ccc':p>=75?'var(--good)':p>=50?'var(--accent2)':'var(--bad)'}"></i></span><span class="val">${v.t?p+'%':'—'}</span></div>`}).join('');
+  const weak=weakTopics(2,6);
+  const mocks=ST.mocks.slice(-5).reverse();
+  body.innerHTML=`<h2>My Progress</h2>
+    <div class="readiness"><div class="stat"><b>${ST.answered}</b><span>items answered</span></div><div class="stat"><b>${pct(c,t)}%</b><span>overall accuracy</span></div><div class="stat"><b>${ST.wrong.length}</b><span>mistakes to review</span></div></div>
+    <h3 style="margin:18px 0 4px">Accuracy by subject</h3><div class="bdown">${rows}</div>
+    <p class="hint">Green = 75% and up (strong) · Yellow = 50–74% · Red = below 50% (focus here)</p>
+    ${weak.length?`<div class="focus"><b>📌 Weakest topics (study these first):</b><ul>${weak.map(w=>`<li>${SUBJECTS[w.s].icon} <b>${esc(w.topic)}</b>: ${w.p}% (${w.c}/${w.t})</li>`).join('')}</ul></div>`:''}
+    ${mocks.length?`<h3 style="margin:18px 0 4px">Recent mock exams</h3><div class="bdown">${mocks.map(m=>`<div class="row"><span class="name">${esc(m.date)}</span><span class="bar"><i style="width:${m.pct}%;background:${m.pct>=75?'var(--good)':m.pct>=50?'var(--accent2)':'var(--bad)'}"></i></span><span class="val">${m.pct}%</span></div>`).join('')}</div>`:''}
+    <div class="btn-row"><button class="btn orange" onclick="startMistakes()">Review my mistakes</button><button class="btn danger" onclick="resetProgress()">Reset progress</button></div>`;
+}
+function resetProgress(){
+  if(!confirm('Erase all your progress on this device? This cannot be undone.')) return;
+  ST={sub:{},top:{},wrong:[],answered:0,mocks:[]}; saveST(); store.set('nexusSeen',{}); renderProgress();
+}
+
+/* ---------------- INSTALL AS APP ---------------- */
+(function(){
+  const box=document.getElementById('installBox'), btn=document.getElementById('installBtn'), hint=document.getElementById('installHint');
+  const standalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
+  const onWeb=location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1';
+  if(standalone||!onWeb) return;
+  if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js').catch(()=>{}); }
+  let deferred=null;
+  window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); deferred=e; box.style.display='flex'; });
+  window.addEventListener('appinstalled',()=>{ box.style.display='none'; });
+  const ua=navigator.userAgent; const isIOS=/iphone|ipad|ipod/i.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  if(isIOS){ box.style.display='flex'; hint.textContent='Add it to your Home Screen. It works offline after that.'; }
+  btn.onclick=async()=>{
+    if(deferred){ deferred.prompt(); await deferred.userChoice; deferred=null; box.style.display='none'; return; }
+    document.getElementById('installModal').classList.add('show');
+  };
+})();
+
+renderHome();
+</script>
+<div class="modal" id="installModal" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="sheet">
+    <h2>Install on iPhone / iPad</h2>
+    <ol>
+      <li>Make sure this page is open in <b>Safari</b>.</li>
+      <li>Tap the <b>Share</b> button (the square with an arrow pointing up).</li>
+      <li>Scroll down and tap <b>Add to Home Screen</b>.</li>
+      <li>Tap <b>Add</b>. The reviewer icon will appear on your Home Screen.</li>
+    </ol>
+    <p class="hint">On Android: open the menu (⋮) in Chrome and tap <b>Install app</b> or <b>Add to Home screen</b>.</p>
+    <button class="btn" onclick="document.getElementById('installModal').classList.remove('show')">Got it</button>
+  </div>
+</div>
+<script>
+if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+  window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});
+}
+</script>
+</body>
+</html>
